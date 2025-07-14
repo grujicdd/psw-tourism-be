@@ -22,6 +22,23 @@ namespace Explorer.Stakeholders.Infrastructure.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("Explorer.Stakeholders.Core.Domain.Interest", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("InterestName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Interests", "stakeholders");
+                });
+
             modelBuilder.Entity("Explorer.Stakeholders.Core.Domain.Person", b =>
                 {
                     b.Property<long>("Id")
@@ -83,11 +100,44 @@ namespace Explorer.Stakeholders.Infrastructure.Migrations
                     b.ToTable("Users", "stakeholders");
                 });
 
+            modelBuilder.Entity("Explorer.Stakeholders.Core.Domain.UserInterest", b =>
+                {
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("InterestId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("Id")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("UserId", "InterestId");
+
+                    b.HasIndex("InterestId");
+
+                    b.ToTable("UserInterests", "stakeholders");
+                });
+
             modelBuilder.Entity("Explorer.Stakeholders.Core.Domain.Person", b =>
                 {
                     b.HasOne("Explorer.Stakeholders.Core.Domain.User", null)
                         .WithOne()
                         .HasForeignKey("Explorer.Stakeholders.Core.Domain.Person", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Explorer.Stakeholders.Core.Domain.UserInterest", b =>
+                {
+                    b.HasOne("Explorer.Stakeholders.Core.Domain.Interest", null)
+                        .WithMany()
+                        .HasForeignKey("InterestId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Explorer.Stakeholders.Core.Domain.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

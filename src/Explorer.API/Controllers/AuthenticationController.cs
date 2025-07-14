@@ -1,5 +1,7 @@
-﻿using Explorer.Stakeholders.API.Dtos;
+﻿using Explorer.BuildingBlocks.Core.UseCases;
+using Explorer.Stakeholders.API.Dtos;
 using Explorer.Stakeholders.API.Public;
+using Explorer.Stakeholders.Core.Domain;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Explorer.API.Controllers;
@@ -14,7 +16,7 @@ public class AuthenticationController : BaseApiController
         _authenticationService = authenticationService;
     }
 
-    [HttpPost]
+    [HttpPost("register")]
     public ActionResult<AuthenticationTokensDto> RegisterTourist([FromBody] AccountRegistrationDto account)
     {
         var result = _authenticationService.RegisterTourist(account);
@@ -26,5 +28,18 @@ public class AuthenticationController : BaseApiController
     {
         var result = _authenticationService.Login(credentials);
         return CreateResponse(result);
+    }
+
+    [HttpGet("interests")]
+    public ActionResult<IEnumerable<InterestDto>> GetInterests([FromServices] ICrudRepository<Interest> interestRepository)
+    {
+        var interests = interestRepository.GetAll();
+        var dtos = interests.Select(i => new InterestDto
+        {
+            Id = i.Id,
+            Name = i.InterestName
+        });
+
+        return Ok(dtos);
     }
 }

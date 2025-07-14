@@ -6,4 +6,5 @@ public interface IUserRepository
     User? GetActiveByName(string username);
     User Create(User user);
     long GetPersonId(long userId);
+    void Delete(string username);
 }
