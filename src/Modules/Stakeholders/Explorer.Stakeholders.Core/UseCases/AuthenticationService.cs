@@ -12,12 +12,14 @@ public class AuthenticationService : IAuthenticationService
     private readonly ITokenGenerator _tokenGenerator;
     private readonly IUserRepository _userRepository;
     private readonly ICrudRepository<Person> _personRepository;
+    private readonly ICrudRepository<UserInterest> _userInterestRepository;
 
-    public AuthenticationService(IUserRepository userRepository, ICrudRepository<Person> personRepository, ITokenGenerator tokenGenerator)
+    public AuthenticationService(IUserRepository userRepository, ICrudRepository<Person> personRepository, ITokenGenerator tokenGenerator, ICrudRepository<UserInterest> userInterestRepository)
     {
         _tokenGenerator = tokenGenerator;
         _userRepository = userRepository;
         _personRepository = personRepository;
+        _userInterestRepository = userInterestRepository;
     }
 
     public Result<AuthenticationTokensDto> Login(CredentialsDto credentials)
@@ -45,13 +47,18 @@ public class AuthenticationService : IAuthenticationService
         {
             var user = _userRepository.Create(new User(account.Username, account.Password, UserRole.Tourist, true));
             var person = _personRepository.Create(new Person(user.Id, account.Name, account.Surname, account.Email));
+            
+            foreach(int interestId in account.InterestsIds)
+            {
+                _userInterestRepository.Create(new UserInterest(person.UserId, interestId));
+            }
 
             return _tokenGenerator.GenerateAccessToken(user, person.Id);
         }
         catch (ArgumentException e)
         {
+            _userRepository.Delete(account.Username);
             return Result.Fail(FailureCode.InvalidArgument).WithError(e.Message);
-            // There is a subtle issue here. Can you find it?
         }
     }
 }
