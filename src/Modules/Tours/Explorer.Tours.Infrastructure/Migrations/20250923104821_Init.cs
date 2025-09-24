@@ -31,6 +31,26 @@ namespace Explorer.Tours.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "KeyPoints",
+                schema: "tours",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    TourId = table.Column<long>(type: "bigint", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: false),
+                    Latitude = table.Column<double>(type: "double precision", nullable: false),
+                    Longitude = table.Column<double>(type: "double precision", nullable: false),
+                    ImageUrl = table.Column<string>(type: "text", nullable: true),
+                    Order = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_KeyPoints", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Tours",
                 schema: "tours",
                 columns: table => new
@@ -56,6 +76,10 @@ namespace Explorer.Tours.Infrastructure.Migrations
         {
             migrationBuilder.DropTable(
                 name: "Equipment",
+                schema: "tours");
+
+            migrationBuilder.DropTable(
+                name: "KeyPoints",
                 schema: "tours");
 
             migrationBuilder.DropTable(

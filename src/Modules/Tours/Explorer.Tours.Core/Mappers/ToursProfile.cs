@@ -17,6 +17,8 @@ public class ToursProfile : Profile
             .ReverseMap()
             .ForMember(dest => dest.State, opt => opt.MapFrom(src => (int)src.State));
 
+        CreateMap<KeyPointDto, KeyPoint>().ReverseMap();
+
         // Add mapping for PagedResult
         CreateMap<PagedResult<Tour>, PagedResult<TourDto>>();
     }

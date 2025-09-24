@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Explorer.Tours.Infrastructure.Migrations
 {
     [DbContext(typeof(ToursContext))]
-    [Migration("20250714101459_Init")]
+    [Migration("20250923104821_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -44,6 +44,42 @@ namespace Explorer.Tours.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Equipment", "tours");
+                });
+
+            modelBuilder.Entity("Explorer.Tours.Core.Domain.KeyPoint", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("text");
+
+                    b.Property<double>("Latitude")
+                        .HasColumnType("double precision");
+
+                    b.Property<double>("Longitude")
+                        .HasColumnType("double precision");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("integer");
+
+                    b.Property<long>("TourId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("KeyPoints", "tours");
                 });
 
             modelBuilder.Entity("Explorer.Tours.Core.Domain.Tour", b =>
