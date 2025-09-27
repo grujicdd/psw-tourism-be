@@ -1,6 +1,7 @@
 ﻿// src/Explorer.API/Controllers/Tourist/ToursController.cs
 using Explorer.BuildingBlocks.Core.UseCases;
 using Explorer.Tours.API.Dtos;
+using Explorer.Tours.API.Public.Administration;
 using Explorer.Tours.API.Public.Tourist;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -12,10 +13,12 @@ namespace Explorer.API.Controllers.Tourist
     public class ToursController : BaseApiController
     {
         private readonly ITouristTourService _tourService;
+        private readonly IKeyPointService _keyPointService;
 
-        public ToursController(ITouristTourService tourService)
+        public ToursController(ITouristTourService tourService, IKeyPointService keyPointService)
         {
             _tourService = tourService;
+            _keyPointService = keyPointService;
         }
 
         [HttpGet]
@@ -48,6 +51,13 @@ namespace Explorer.API.Controllers.Tourist
         public ActionResult<IEnumerable<CategoryDto>> GetCategories()
         {
             var result = _tourService.GetCategories();
+            return CreateResponse(result);
+        }
+
+        [HttpGet("{id:long}/keypoints")]
+        public ActionResult<IEnumerable<KeyPointDto>> GetTourKeyPoints(long id)
+        {
+            var result = _keyPointService.GetByTourId(id);
             return CreateResponse(result);
         }
     }

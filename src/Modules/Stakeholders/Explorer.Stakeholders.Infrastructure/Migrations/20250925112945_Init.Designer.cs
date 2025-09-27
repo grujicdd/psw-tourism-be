@@ -11,7 +11,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Explorer.Stakeholders.Infrastructure.Migrations
 {
     [DbContext(typeof(StakeholdersContext))]
-    [Migration("20250923104812_Init")]
+    [Migration("20250925112945_Init")]
     partial class Init
     {
         /// <inheritdoc />
