@@ -117,7 +117,8 @@ namespace Explorer.Tours.Infrastructure.Migrations
                     BonusPointsUsed = table.Column<decimal>(type: "numeric(10,2)", precision: 10, scale: 2, nullable: false),
                     FinalAmount = table.Column<decimal>(type: "numeric(10,2)", precision: 10, scale: 2, nullable: false),
                     PurchaseDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Status = table.Column<int>(type: "integer", nullable: false)
+                    Status = table.Column<int>(type: "integer", nullable: false),
+                    ReminderSent = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {

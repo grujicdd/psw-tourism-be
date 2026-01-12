@@ -148,10 +148,21 @@ INSERT INTO tours."ShoppingCarts"("Id", "TouristId", "TourIds", "CreatedAt", "Up
 (1, 22, '[1, 2]', '2024-12-01 15:30:00+01:00', '2024-12-01 16:45:00+01:00'); -- Nikola has Belgrade and Novi Sad tours in cart
 
 -- Insert a sample completed purchase
-INSERT INTO tours."TourPurchases"("Id", "TouristId", "TourIds", "TotalAmount", "BonusPointsUsed", "FinalAmount", "PurchaseDate", "Status") VALUES 
-(1, 24, '[6, 7]', 70.00, 0.00, 70.00, '2024-11-20 12:00:00+01:00', 0); -- Milan bought Danube and Nightlife tours
+INSERT INTO tours."TourPurchases"("Id", "TouristId", "TourIds", "TotalAmount", "BonusPointsUsed", "FinalAmount", "PurchaseDate", "Status", "ReminderSent") VALUES 
+(1, 24, '[6, 7]', 70.00, 0.00, 70.00, '2024-11-20 12:00:00+01:00', 0, true); -- Milan bought Danube and Nightlife tours
 
 -- Add corresponding bonus transaction for the purchase (none in this case since no bonus points used)
+
+SELECT SETVAL('stakeholders."Interests_Id_seq"', COALESCE(MAX("Id"), 1)) FROM stakeholders."Interests";
+SELECT SETVAL('stakeholders."Users_Id_seq"', COALESCE(MAX("Id"), 1)) FROM stakeholders."Users";
+SELECT SETVAL('stakeholders."People_Id_seq"', COALESCE(MAX("Id"), 1)) FROM stakeholders."People";
+SELECT SETVAL('tours."BonusPoints_Id_seq"', COALESCE(MAX("Id"), 1)) FROM tours."BonusPoints";
+SELECT SETVAL('tours."BonusTransactions_Id_seq"', COALESCE(MAX("Id"), 1)) FROM tours."BonusTransactions";
+SELECT SETVAL('tours."Equipment_Id_seq"', COALESCE(MAX("Id"), 1)) FROM tours."Equipment";
+SELECT SETVAL('tours."KeyPoints_Id_seq"', COALESCE(MAX("Id"), 1)) FROM tours."KeyPoints";
+SELECT SETVAL('tours."ShoppingCarts_Id_seq"', COALESCE(MAX("Id"), 1)) FROM tours."ShoppingCarts";
+SELECT SETVAL('tours."TourPurchases_Id_seq"', COALESCE(MAX("Id"), 1)) FROM tours."TourPurchases";
+SELECT SETVAL('tours."Tours_Id_seq"', COALESCE(MAX("Id"), 1)) FROM tours."Tours";
 
 -- ============================================
 -- Summary of created data:

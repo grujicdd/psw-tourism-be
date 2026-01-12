@@ -4,6 +4,8 @@ using Explorer.BuildingBlocks.Core.UseCases;
 using Explorer.Stakeholders.Core.Domain;
 using FluentResults;
 using Microsoft.Extensions.Logging;
+using System.Net;
+using System.Net.Mail;
 
 namespace Explorer.Tours.Core.UseCases.Internal
 {
@@ -11,6 +13,16 @@ namespace Explorer.Tours.Core.UseCases.Internal
     {
         private readonly ICrudRepository<Person> _personRepository;
         private readonly ILogger<EmailService> _logger;
+
+        // SAFETY: Only send to this email address (change this to your test email)
+        private const string ALLOWED_TEST_EMAIL = "krazykeny1@gmail.com";
+
+        // SMTP Configuration - these should come from appsettings.json in production
+        private const string SMTP_HOST = "smtp.gmail.com";
+        private const int SMTP_PORT = 587;
+        private const string SMTP_USERNAME = "grooyabeats@gmail.com"; // The Gmail account that sends
+        private const string SMTP_PASSWORD = "xklt rnat gaga ksnm";     // Gmail App Password (NOT regular password)
+        private const bool ENABLE_REAL_EMAIL_SENDING = true;         // Set to true to actually send emails
 
         public EmailService(ICrudRepository<Person> personRepository, ILogger<EmailService> logger)
         {
@@ -22,22 +34,16 @@ namespace Explorer.Tours.Core.UseCases.Internal
         {
             try
             {
-                // Get tourist email directly from repository
                 var email = GetTouristEmail(touristId);
                 if (string.IsNullOrEmpty(email))
                 {
                     return Result.Fail("Could not retrieve tourist email");
                 }
 
-                // For now, log the email instead of actually sending it
+                var subject = "Purchase Confirmation - Your Tour Booking";
                 var emailContent = GeneratePurchaseConfirmationEmail(email, purchaseData);
 
-                _logger.LogInformation("PURCHASE CONFIRMATION EMAIL");
-                _logger.LogInformation("To: {Email}", email);
-                _logger.LogInformation("Subject: Purchase Confirmation - Your Tour Booking");
-                _logger.LogInformation("Content: {Content}", emailContent);
-
-                return Result.Ok();
+                return await SendEmailAsync(email, subject, emailContent);
             }
             catch (Exception ex)
             {
@@ -55,12 +61,9 @@ namespace Explorer.Tours.Core.UseCases.Internal
                     var email = GetTouristEmail(touristId);
                     if (!string.IsNullOrEmpty(email))
                     {
+                        var subject = $"Tour Cancellation - {cancellationData.TourName}";
                         var emailContent = GenerateCancellationEmail(email, cancellationData);
-
-                        _logger.LogInformation("TOUR CANCELLATION EMAIL");
-                        _logger.LogInformation("To: {Email}", email);
-                        _logger.LogInformation("Subject: Tour Cancellation - {TourName}", cancellationData.TourName);
-                        _logger.LogInformation("Content: {Content}", emailContent);
+                        await SendEmailAsync(email, subject, emailContent);
                     }
                 }
 
@@ -83,19 +86,77 @@ namespace Explorer.Tours.Core.UseCases.Internal
                     return Result.Fail("Could not retrieve tourist email");
                 }
 
+                var subject = $"Tour Reminder - {reminderData.TourName} in 48 Hours!";
                 var emailContent = GenerateReminderEmail(email, reminderData);
 
-                _logger.LogInformation("TOUR REMINDER EMAIL");
-                _logger.LogInformation("To: {Email}", email);
-                _logger.LogInformation("Subject: Tour Reminder - {TourName} Tomorrow", reminderData.TourName);
-                _logger.LogInformation("Content: {Content}", emailContent);
-
-                return Result.Ok();
+                return await SendEmailAsync(email, subject, emailContent);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error sending tour reminder email to tourist {TouristId}", touristId);
                 return Result.Fail($"Error sending email: {ex.Message}");
+            }
+        }
+
+        private async Task<Result> SendEmailAsync(string recipientEmail, string subject, string body)
+        {
+            // Always log the email
+            _logger.LogInformation("========================================");
+            _logger.LogInformation("EMAIL NOTIFICATION");
+            _logger.LogInformation("To: {Email}", recipientEmail);
+            _logger.LogInformation("Subject: {Subject}", subject);
+            _logger.LogInformation("Content:\n{Content}", body);
+            _logger.LogInformation("========================================");
+
+            // Check if real email sending is enabled
+            if (!ENABLE_REAL_EMAIL_SENDING)
+            {
+                _logger.LogInformation("Real email sending is DISABLED - email logged only");
+                return Result.Ok();
+            }
+
+            // SAFETY CHECK: Only send to allowed test email
+            if (recipientEmail != ALLOWED_TEST_EMAIL)
+            {
+                _logger.LogWarning(
+                    "SAFETY: Skipping email to {Email} - only {AllowedEmail} is allowed for testing",
+                    recipientEmail, ALLOWED_TEST_EMAIL);
+                return Result.Ok();
+            }
+
+            // Send actual email via SMTP
+            try
+            {
+                using var smtpClient = new SmtpClient(SMTP_HOST, SMTP_PORT)
+                {
+                    EnableSsl = true,
+                    Credentials = new NetworkCredential(SMTP_USERNAME, SMTP_PASSWORD),
+                    Timeout = 10000 // 10 seconds timeout
+                };
+
+                var mailMessage = new MailMessage
+                {
+                    From = new MailAddress(SMTP_USERNAME, "Explorer Tours"),
+                    Subject = subject,
+                    Body = body,
+                    IsBodyHtml = false
+                };
+                mailMessage.To.Add(recipientEmail);
+
+                await smtpClient.SendMailAsync(mailMessage);
+
+                _logger.LogInformation("✅ Email successfully sent to {Email}", recipientEmail);
+                return Result.Ok();
+            }
+            catch (SmtpException ex)
+            {
+                _logger.LogError(ex, "SMTP error sending email to {Email}", recipientEmail);
+                return Result.Fail($"Failed to send email: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Unexpected error sending email to {Email}", recipientEmail);
+                return Result.Fail($"Failed to send email: {ex.Message}");
             }
         }
 
@@ -168,7 +229,7 @@ The Explorer Team
             return $@"
 Dear Explorer Customer,
 
-This is a friendly reminder that your tour is scheduled for tomorrow!
+This is a friendly reminder that your tour is scheduled in 48 hours!
 
 Tour Details:
 - Tour: {data.TourName}
