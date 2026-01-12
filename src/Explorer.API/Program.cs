@@ -1,4 +1,5 @@
 using Explorer.API.Startup;
+using Explorer.API.BackgroundServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +10,8 @@ builder.Services.ConfigureCors(corsPolicy);
 builder.Services.ConfigureAuth();
 
 builder.Services.RegisterModules();
+
+builder.Services.AddHostedService<TourReminderBackgroundService>();
 
 var app = builder.Build();
 

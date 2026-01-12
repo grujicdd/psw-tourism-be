@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Explorer.Tours.Infrastructure.Migrations
 {
     [DbContext(typeof(ToursContext))]
-    [Migration("20250925113420_Init")]
+    [Migration("20260111121253_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -237,6 +237,9 @@ namespace Explorer.Tours.Infrastructure.Migrations
 
                     b.Property<DateTime>("PurchaseDate")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("ReminderSent")
+                        .HasColumnType("boolean");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");

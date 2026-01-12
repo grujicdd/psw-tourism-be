@@ -11,6 +11,7 @@ namespace Explorer.Tours.Core.Domain
         public decimal FinalAmount { get; private set; }
         public DateTime PurchaseDate { get; private set; }
         public PurchaseStatus Status { get; private set; }
+        public bool ReminderSent { get; private set; }
 
         public TourPurchase(long touristId, List<long> tourIds, decimal totalAmount, decimal bonusPointsUsed)
         {
@@ -21,6 +22,7 @@ namespace Explorer.Tours.Core.Domain
             FinalAmount = totalAmount - bonusPointsUsed;
             PurchaseDate = DateTime.UtcNow;
             Status = PurchaseStatus.Completed;
+            ReminderSent = false; // Initially, no reminder has been sent
             Validate();
         }
 
@@ -56,6 +58,12 @@ namespace Explorer.Tours.Core.Domain
         public bool ContainsTour(long tourId)
         {
             return TourIds.Contains(tourId);
+        }
+
+        // New method to mark reminder as sent
+        public void MarkReminderAsSent()
+        {
+            ReminderSent = true;
         }
     }
 
