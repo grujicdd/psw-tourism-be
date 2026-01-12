@@ -55,4 +55,4 @@ nunit-*.xml
 
 src/.vs
 
-**/appsettings.Development.json
+**/appsettings.json
