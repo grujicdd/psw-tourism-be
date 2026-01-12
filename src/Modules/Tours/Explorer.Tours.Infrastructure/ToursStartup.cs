@@ -9,17 +9,21 @@ using Explorer.Tours.Core.Mappers;
 using Explorer.Tours.Core.UseCases.Administration;
 using Explorer.Tours.Core.UseCases.Tourist;
 using Explorer.Tours.Core.UseCases.Internal;
+using Explorer.Tours.Core.Configuration;
 using Explorer.Tours.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Http; // Add this for HttpClient extensions
+using Microsoft.Extensions.Configuration;
 
 namespace Explorer.Tours.Infrastructure;
 
 public static class ToursStartup
 {
-    public static IServiceCollection ConfigureToursModule(this IServiceCollection services)
+    public static IServiceCollection ConfigureToursModule(this IServiceCollection services, IConfiguration configuration)
     {
+        // Configure EmailSettings from appsettings.json
+        services.Configure<EmailSettings>(configuration.GetSection("EmailSettings"));
+
         // Registers all profiles since it works on the assembly
         services.AddAutoMapper(typeof(ToursProfile).Assembly);
         SetupCore(services);

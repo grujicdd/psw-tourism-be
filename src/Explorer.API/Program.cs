@@ -9,7 +9,7 @@ const string corsPolicy = "_corsPolicy";
 builder.Services.ConfigureCors(corsPolicy);
 builder.Services.ConfigureAuth();
 
-builder.Services.RegisterModules();
+builder.Services.RegisterModules(builder.Configuration);  // Pass configuration here
 
 builder.Services.AddHostedService<TourReminderBackgroundService>();
 
