@@ -1,9 +1,11 @@
 ﻿// src/Modules/Tours/Explorer.Tours.Core/UseCases/Internal/EmailService.cs
-using Explorer.Tours.API.Public.Internal;
 using Explorer.BuildingBlocks.Core.UseCases;
 using Explorer.Stakeholders.Core.Domain;
+using Explorer.Tours.API.Public.Internal;
+using Explorer.Tours.Core.Configuration;
 using FluentResults;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System.Net;
 using System.Net.Mail;
 
@@ -14,20 +16,16 @@ namespace Explorer.Tours.Core.UseCases.Internal
         private readonly ICrudRepository<Person> _personRepository;
         private readonly ILogger<EmailService> _logger;
 
-        // SAFETY: Only send to this email address (change this to your test email)
-        private const string ALLOWED_TEST_EMAIL = "krazykeny1@gmail.com";
+        private readonly EmailSettings _emailSettings;
 
-        // SMTP Configuration - these should come from appsettings.json in production
-        private const string SMTP_HOST = "smtp.gmail.com";
-        private const int SMTP_PORT = 587;
-        private const string SMTP_USERNAME = "grooyabeats@gmail.com"; // The Gmail account that sends
-        private const string SMTP_PASSWORD = "xklt rnat gaga ksnm";     // Gmail App Password (NOT regular password)
-        private const bool ENABLE_REAL_EMAIL_SENDING = true;         // Set to true to actually send emails
-
-        public EmailService(ICrudRepository<Person> personRepository, ILogger<EmailService> logger)
+        public EmailService(
+            ICrudRepository<Person> personRepository,
+            ILogger<EmailService> logger,
+            IOptions<EmailSettings> emailSettings)
         {
             _personRepository = personRepository;
             _logger = logger;
+            _emailSettings = emailSettings.Value;
         }
 
         public async Task<Result> SendPurchaseConfirmationAsync(long touristId, PurchaseEmailData purchaseData)
@@ -109,34 +107,34 @@ namespace Explorer.Tours.Core.UseCases.Internal
             _logger.LogInformation("========================================");
 
             // Check if real email sending is enabled
-            if (!ENABLE_REAL_EMAIL_SENDING)
+            if (!_emailSettings.EnableRealEmailSending)
             {
                 _logger.LogInformation("Real email sending is DISABLED - email logged only");
                 return Result.Ok();
             }
 
             // SAFETY CHECK: Only send to allowed test email
-            if (recipientEmail != ALLOWED_TEST_EMAIL)
+            if (recipientEmail != _emailSettings.AllowedTestEmail)
             {
                 _logger.LogWarning(
                     "SAFETY: Skipping email to {Email} - only {AllowedEmail} is allowed for testing",
-                    recipientEmail, ALLOWED_TEST_EMAIL);
+                    recipientEmail, _emailSettings.AllowedTestEmail);
                 return Result.Ok();
             }
 
             // Send actual email via SMTP
             try
             {
-                using var smtpClient = new SmtpClient(SMTP_HOST, SMTP_PORT)
+                using var smtpClient = new SmtpClient(_emailSettings.SmtpHost, _emailSettings.SmtpPort)
                 {
                     EnableSsl = true,
-                    Credentials = new NetworkCredential(SMTP_USERNAME, SMTP_PASSWORD),
+                    Credentials = new NetworkCredential(_emailSettings.SmtpUsername, _emailSettings.SmtpPassword),
                     Timeout = 10000 // 10 seconds timeout
                 };
 
                 var mailMessage = new MailMessage
                 {
-                    From = new MailAddress(SMTP_USERNAME, "Explorer Tours"),
+                    From = new MailAddress(_emailSettings.SmtpUsername, "Explorer Tours"),
                     Subject = subject,
                     Body = body,
                     IsBodyHtml = false
