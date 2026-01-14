@@ -46,6 +46,8 @@ public static class ToursStartup
 
         // Email service with direct repository access
         services.AddScoped<IEmailService, EmailService>();
+
+        services.AddScoped<ITourReviewService, TourReviewService>();
     }
 
     private static void SetupInfrastructure(IServiceCollection services)
@@ -60,6 +62,8 @@ public static class ToursStartup
         services.AddScoped(typeof(ICrudRepository<TourPurchase>), typeof(CrudDatabaseRepository<TourPurchase, ToursContext>));
         services.AddScoped(typeof(ICrudRepository<BonusPoints>), typeof(CrudDatabaseRepository<BonusPoints, ToursContext>));
         services.AddScoped(typeof(ICrudRepository<BonusTransaction>), typeof(CrudDatabaseRepository<BonusTransaction, ToursContext>));
+
+        services.AddScoped(typeof(ICrudRepository<TourReview>), typeof(CrudDatabaseRepository<TourReview, ToursContext>));
 
         services.AddDbContext<ToursContext>(opt =>
             opt.UseNpgsql(DbConnectionStringBuilder.Build("tours"),
