@@ -126,6 +126,25 @@ namespace Explorer.Tours.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "TourReviews",
+                schema: "tours",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    TourPurchaseId = table.Column<long>(type: "bigint", nullable: false),
+                    TourId = table.Column<long>(type: "bigint", nullable: false),
+                    TouristId = table.Column<long>(type: "bigint", nullable: false),
+                    Rating = table.Column<int>(type: "integer", nullable: false),
+                    Comment = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
+                    ReviewDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TourReviews", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Tours",
                 schema: "tours",
                 columns: table => new
@@ -188,6 +207,31 @@ namespace Explorer.Tours.Infrastructure.Migrations
                 schema: "tours",
                 table: "TourPurchases",
                 column: "TouristId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TourReviews_TourId",
+                schema: "tours",
+                table: "TourReviews",
+                column: "TourId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TourReviews_TouristId",
+                schema: "tours",
+                table: "TourReviews",
+                column: "TouristId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TourReviews_TourPurchaseId",
+                schema: "tours",
+                table: "TourReviews",
+                column: "TourPurchaseId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TourReviews_TourPurchaseId_TourId",
+                schema: "tours",
+                table: "TourReviews",
+                columns: new[] { "TourPurchaseId", "TourId" },
+                unique: true);
         }
 
         /// <inheritdoc />
@@ -215,6 +259,10 @@ namespace Explorer.Tours.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "TourPurchases",
+                schema: "tours");
+
+            migrationBuilder.DropTable(
+                name: "TourReviews",
                 schema: "tours");
 
             migrationBuilder.DropTable(

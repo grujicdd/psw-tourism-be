@@ -16,6 +16,7 @@ public class ToursContext : DbContext
     public DbSet<TourPurchase> TourPurchases { get; set; }
     public DbSet<BonusPoints> BonusPoints { get; set; }
     public DbSet<BonusTransaction> BonusTransactions { get; set; }
+    public DbSet<TourReview> TourReviews { get; set; }
 
     public ToursContext(DbContextOptions<ToursContext> options) : base(options) { }
 
@@ -28,6 +29,7 @@ public class ToursContext : DbContext
         ConfigureTourPurchase(modelBuilder);
         ConfigureBonusPoints(modelBuilder);
         ConfigureBonusTransaction(modelBuilder);
+        ConfigureTourReview(modelBuilder);
     }
 
     private static void ConfigureTour(ModelBuilder modelBuilder)
@@ -130,5 +132,31 @@ public class ToursContext : DbContext
 
         modelBuilder.Entity<BonusTransaction>()
             .HasIndex(bt => bt.Type);
+    }
+
+    private static void ConfigureTourReview(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<TourReview>()
+            .HasKey(tr => tr.Id);
+
+        // Indexes for performance
+        modelBuilder.Entity<TourReview>()
+            .HasIndex(tr => tr.TouristId);
+
+        modelBuilder.Entity<TourReview>()
+            .HasIndex(tr => tr.TourId);
+
+        modelBuilder.Entity<TourReview>()
+            .HasIndex(tr => tr.TourPurchaseId);
+
+        // Composite unique index: one review per tour per purchase
+        modelBuilder.Entity<TourReview>()
+            .HasIndex(tr => new { tr.TourPurchaseId, tr.TourId })
+            .IsUnique();
+
+        // Optional: Configure comment max length
+        modelBuilder.Entity<TourReview>()
+            .Property(tr => tr.Comment)
+            .HasMaxLength(1000);
     }
 }

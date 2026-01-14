@@ -38,5 +38,10 @@ public class ToursProfile : Profile
         CreateMap<PagedResult<Tour>, PagedResult<TourDto>>();
         CreateMap<PagedResult<TourPurchase>, PagedResult<TourPurchaseDto>>();
         CreateMap<PagedResult<BonusTransaction>, PagedResult<BonusTransactionDto>>();
+
+        CreateMap<TourReviewDto, TourReview>().ReverseMap();
+        CreateMap<TourReviewCreateDto, TourReview>()
+            .ForMember(dest => dest.TouristId, opt => opt.Ignore())
+            .ForMember(dest => dest.ReviewDate, opt => opt.Ignore());
     }
 }

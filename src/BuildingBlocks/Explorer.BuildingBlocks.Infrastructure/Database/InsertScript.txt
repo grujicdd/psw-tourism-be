@@ -176,3 +176,135 @@ SELECT SETVAL('tours."Tours_Id_seq"', COALESCE(MAX("Id"), 1)) FROM tours."Tours"
 -- - 16 Key points across the published tours
 -- - Sample bonus points and purchase history for testing
 -- ============================================
+
+-- Purchase 2: Petar bought Belgrade tour (happened on Dec 20, 2024 - more than 7 days ago)
+INSERT INTO tours."TourPurchases"("Id", "TouristId", "TourIds", "TotalAmount", "BonusPointsUsed", "FinalAmount", "PurchaseDate", "Status", "ReminderSent") VALUES 
+(2, 20, '[1]', 25.00, 0.00, 25.00, '2024-12-10 10:00:00+01:00', 0, true);
+
+-- Purchase 3: Jovana bought Novi Sad tour (happened on Dec 22, 2024 - more than 7 days ago)
+INSERT INTO tours."TourPurchases"("Id", "TouristId", "TourIds", "TotalAmount", "BonusPointsUsed", "FinalAmount", "PurchaseDate", "Status", "ReminderSent") VALUES 
+(3, 21, '[2]', 35.00, 0.00, 35.00, '2024-12-15 09:00:00+01:00', 0, true);
+
+-- Purchase 4: Nikola bought Tara National Park tour (happened on Dec 25, 2024 - more than 7 days ago)
+INSERT INTO tours."TourPurchases"("Id", "TouristId", "TourIds", "TotalAmount", "BonusPointsUsed", "FinalAmount", "PurchaseDate", "Status", "ReminderSent") VALUES 
+(4, 22, '[3]', 55.00, 0.00, 55.00, '2024-12-18 14:30:00+01:00', 0, true);
+
+-- Purchase 5: Tamara bought multiple tours including future ones
+-- Tour 4 (Kopaonik) is on Jan 10, 2025 - SHOULD BE REVIEWABLE (happened 3 days ago from today Jan 13)
+INSERT INTO tours."TourPurchases"("Id", "TouristId", "TourIds", "TotalAmount", "BonusPointsUsed", "FinalAmount", "PurchaseDate", "Status", "ReminderSent") VALUES 
+(5, 23, '[4, 5, 6]', 160.00, 40.00, 120.00, '2024-12-28 11:00:00+01:00', 0, true);
+
+-- Purchase 6: Sara bought upcoming tours (all in future - NOT reviewable yet)
+INSERT INTO tours."TourPurchases"("Id", "TouristId", "TourIds", "TotalAmount", "BonusPointsUsed", "FinalAmount", "PurchaseDate", "Status", "ReminderSent") VALUES 
+(6, 25, '[7, 8]', 90.00, 0.00, 90.00, '2025-01-05 16:20:00+01:00', 0, false);
+
+-- Update bonus transaction for Tamara's purchase (she used 40 bonus points)
+INSERT INTO tours."BonusTransactions"("Id", "TouristId", "Amount", "Type", "Description", "RelatedTourId", "RelatedPurchaseId", "CreatedAt") VALUES 
+(4, 23, -40.00, 1, 'Used bonus points for tour purchase', null, 5, '2024-12-28 11:00:00+01:00');
+
+-- Update Tamara's bonus points (subtract the 40 she used)
+UPDATE tours."BonusPoints" 
+SET "AvailablePoints" = 0.00, "UpdatedAt" = '2024-12-28 11:00:00+01:00'
+WHERE "TouristId" = 23;
+
+-- ============================================
+-- TOUR REVIEWS - Sample reviews for testing
+-- ============================================
+
+-- Review 1: Petar reviewed Belgrade tour (Tour 1) - completed more than 7 days ago
+-- This is from Purchase 2, Tour 1
+INSERT INTO tours."TourReviews"("Id", "TourPurchaseId", "TourId", "TouristId", "Rating", "Comment", "ReviewDate") VALUES 
+(1, 2, 1, 20, 5, 'Fantastična tura! Vodič je bio veoma informativan i zabavan. Kalemegdan je prelepa lokacija.', '2024-12-21 15:30:00+01:00');
+
+-- Review 2: Jovana reviewed Novi Sad tour (Tour 2) - with lower rating and required comment
+INSERT INTO tours."TourReviews"("Id", "TourPurchaseId", "TourId", "TouristId", "Rating", "Comment", "ReviewDate") VALUES 
+(2, 3, 2, 21, 2, 'Hrana je bila dobra ali organizacija je mogla biti bolja. Previše čekanja između lokacija.', '2024-12-23 18:45:00+01:00');
+
+-- Review 3: Nikola reviewed Tara tour (Tour 3) - excellent rating
+INSERT INTO tours."TourReviews"("Id", "TourPurchaseId", "TourId", "TouristId", "Rating", "Comment", "ReviewDate") VALUES 
+(3, 4, 3, 22, 5, 'Nezaboravno iskustvo! Prelepi pogledi i odličan vodič. Definitivno vredan svakog dinara.', '2024-12-26 20:10:00+01:00');
+
+-- Review 4: Tamara reviewed Kopaonik tour (Tour 4) - this one happened 3 days ago so it's in the reviewable window!
+INSERT INTO tours."TourReviews"("Id", "TourPurchaseId", "TourId", "TouristId", "Rating", "Comment", "ReviewDate") VALUES 
+(4, 5, 4, 23, 4, 'Odlično skijaško iskustvo! Jedini minus je što je bilo mnogo ljudi na stazi.', '2025-01-11 14:20:00+01:00');
+
+-- ============================================
+-- UPDATE SEQUENCES
+-- ============================================
+
+SELECT SETVAL('tours."TourPurchases_Id_seq"', COALESCE(MAX("Id"), 1)) FROM tours."TourPurchases";
+SELECT SETVAL('tours."BonusTransactions_Id_seq"', COALESCE(MAX("Id"), 1)) FROM tours."BonusTransactions";
+SELECT SETVAL('tours."TourReviews_Id_seq"', COALESCE(MAX("Id"), 1)) FROM tours."TourReviews";
+
+-- ============================================
+-- REVIEW TEST DATA SUMMARY:
+-- ============================================
+-- Purchase 1 (Milan): Tours 6 & 7 - both in future, NOT reviewable yet
+-- Purchase 2 (Petar): Tour 1 - happened Dec 20 (>7 days ago), already reviewed, CAN'T review again
+-- Purchase 3 (Jovana): Tour 2 - happened Dec 22 (>7 days ago), already reviewed, CAN'T review again  
+-- Purchase 4 (Nikola): Tour 3 - happened Dec 25 (>7 days ago), already reviewed, CAN'T review again
+-- Purchase 5 (Tamara): 
+--   - Tour 4 (Kopaonik) - happened Jan 10 (3 days ago), already reviewed, CAN'T review again
+--   - Tour 5 (Monasteries) - future (Jan 15), NOT reviewable yet
+--   - Tour 6 (Danube) - future (Jan 20), NOT reviewable yet
+-- Purchase 6 (Sara): Tours 7 & 8 - both in future, NOT reviewable yet
+--
+-- TO TEST REVIEWABILITY:
+-- Need to create a NEW purchase with a tour date between Jan 6-12, 2025 (1-7 days ago from today)
+-- ============================================
+
+-- ============================================
+-- ADDITIONAL TEST PURCHASE FOR FULL REVIEW TESTING
+-- ============================================
+
+-- First, we need to create a tour that happened recently (within review window)
+-- Tour 9: A tour that happened 5 days ago (Jan 8, 2025) - PERFECT for review testing!
+INSERT INTO tours."Tours"("Id", "Name", "Description", "Difficulty", "Category", "Price", "Date", "State") VALUES 
+(9, 'Novi Pazar Historical Walk', 'Explore the multicultural heritage of Novi Pazar including Ottoman architecture, medieval churches, and traditional crafts.', 2, 2, 30, '2026-01-08 10:00:00+01:00', 1);
+
+-- Add key points for this tour
+INSERT INTO tours."KeyPoints"("Id", "TourId", "Name", "Description", "Latitude", "Longitude", "ImageUrl", "Order") VALUES 
+(17, 9, 'Altun-Alem Mosque', 'Beautiful 16th century mosque with unique architecture', 43.1367, 20.5122, null, 1),
+(18, 9, 'St. Peter and Paul Church', 'Medieval Serbian Orthodox church ruins', 43.1400, 20.5100, null, 2),
+(19, 9, 'Old Bazaar', 'Traditional craftsmen quarter with authentic workshops', 43.1350, 20.5130, null, 3);
+
+-- Purchase 7: Milan bought this recently completed tour - SHOULD BE REVIEWABLE!
+INSERT INTO tours."TourPurchases"("Id", "TouristId", "TourIds", "TotalAmount", "BonusPointsUsed", "FinalAmount", "PurchaseDate", "Status", "ReminderSent") VALUES 
+(7, 24, '[9]', 30.00, 0.00, 30.00, '2026-01-03 09:15:00+01:00', 0, true);
+
+-- Tour 10: Another recent tour (happened 2 days ago - Jan 11, 2025)
+INSERT INTO tours."Tours"("Id", "Name", "Description", "Difficulty", "Category", "Price", "Date", "State") VALUES 
+(10, 'Šumadija Wine & Nature Tour', 'Visit local wineries and enjoy scenic countryside views in the heart of Serbia.', 1, 5, 40, '2026-01-11 11:00:00+01:00', 1);
+
+INSERT INTO tours."KeyPoints"("Id", "TourId", "Name", "Description", "Latitude", "Longitude", "ImageUrl", "Order") VALUES 
+(20, 10, 'Oplenac Royal Complex', 'Stunning mausoleum and royal vineyards', 44.2167, 20.7333, null, 1),
+(21, 10, 'Local Winery Aleksandrović', 'Award-winning Serbian wine tasting', 44.2100, 20.7200, null, 2);
+
+-- Purchase 8: Sara bought this recent tour - SHOULD BE REVIEWABLE!
+INSERT INTO tours."TourPurchases"("Id", "TouristId", "TourIds", "TotalAmount", "BonusPointsUsed", "FinalAmount", "PurchaseDate", "Status", "ReminderSent") VALUES 
+(8, 25, '[10]', 40.00, 0.00, 40.00, '2026-01-08 13:45:00+01:00', 0, true);
+
+-- Update sequences for new tours and purchases
+SELECT SETVAL('tours."Tours_Id_seq"', COALESCE(MAX("Id"), 1)) FROM tours."Tours";
+SELECT SETVAL('tours."KeyPoints_Id_seq"', COALESCE(MAX("Id"), 1)) FROM tours."KeyPoints";
+SELECT SETVAL('tours."TourPurchases_Id_seq"', COALESCE(MAX("Id"), 1)) FROM tours."TourPurchases";
+
+-- ============================================
+-- FINAL TEST SCENARIOS AVAILABLE:
+-- ============================================
+-- 1. Milan (ID: 24) CAN review Tour 9 (Novi Pazar) from Purchase 7
+--    - Tour happened 5 days ago (Jan 8)
+--    - Within 7-day window ✅
+--    - Not reviewed yet ✅
+--
+-- 2. Sara (ID: 25) CAN review Tour 10 (Šumadija) from Purchase 8  
+--    - Tour happened 2 days ago (Jan 11)
+--    - Within 7-day window ✅
+--    - Not reviewed yet ✅
+--
+-- 3. Petar (ID: 20) CANNOT review Tour 1 again (already reviewed)
+--
+-- 4. Tamara (ID: 23) CANNOT review Tour 5 or 6 (future tours)
+--
+-- 5. Any tourist trying to review tours from >7 days ago should fail
+-- ============================================

@@ -260,6 +260,47 @@ namespace Explorer.Tours.Infrastructure.Migrations
 
                     b.ToTable("TourPurchases", "tours");
                 });
+
+            modelBuilder.Entity("Explorer.Tours.Core.Domain.TourReview", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Comment")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("ReviewDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long>("TourId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("TourPurchaseId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("TouristId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TourId");
+
+                    b.HasIndex("TourPurchaseId");
+
+                    b.HasIndex("TouristId");
+
+                    b.HasIndex("TourPurchaseId", "TourId")
+                        .IsUnique();
+
+                    b.ToTable("TourReviews", "tours");
+                });
 #pragma warning restore 612, 618
         }
     }
