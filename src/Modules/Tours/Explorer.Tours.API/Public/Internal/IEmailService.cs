@@ -8,6 +8,7 @@ namespace Explorer.Tours.API.Public.Internal
         Task<Result> SendPurchaseConfirmationAsync(long touristId, PurchaseEmailData purchaseData);
         Task<Result> SendTourCancellationAsync(List<long> touristIds, TourCancellationEmailData cancellationData);
         Task<Result> SendTourReminderAsync(long touristId, TourReminderEmailData reminderData);
+        Task<Result> SendTourRecommendationAsync(long tourId, TourRecommendationEmailData tourData);
     }
 
     public class PurchaseEmailData
@@ -44,5 +45,14 @@ namespace Explorer.Tours.API.Public.Internal
         {
             KeyPoints = new List<string>();
         }
+    }
+
+    public class TourRecommendationEmailData
+    {
+        public string TourName { get; set; }
+        public string TourDescription { get; set; }
+        public int TourCategory { get; set; }
+        public DateTime TourDate { get; set; }
+        public int TourPrice { get; set; }
     }
 }

@@ -1,5 +1,6 @@
 ﻿// src/Modules/Tours/Explorer.Tours.Core/UseCases/Internal/EmailService.cs
 using Explorer.BuildingBlocks.Core.UseCases;
+using Explorer.Stakeholders.API.Public.Internal;
 using Explorer.Stakeholders.Core.Domain;
 using Explorer.Tours.API.Public.Internal;
 using Explorer.Tours.Core.Configuration;
@@ -15,17 +16,19 @@ namespace Explorer.Tours.Core.UseCases.Internal
     {
         private readonly ICrudRepository<Person> _personRepository;
         private readonly ILogger<EmailService> _logger;
-
         private readonly EmailSettings _emailSettings;
+        private readonly IUserNotificationService _userNotificationService;
 
         public EmailService(
             ICrudRepository<Person> personRepository,
             ILogger<EmailService> logger,
-            IOptions<EmailSettings> emailSettings)
+            IOptions<EmailSettings> emailSettings,
+            IUserNotificationService userNotificationService)
         {
             _personRepository = personRepository;
             _logger = logger;
             _emailSettings = emailSettings.Value;
+            _userNotificationService = userNotificationService;
         }
 
         public async Task<Result> SendPurchaseConfirmationAsync(long touristId, PurchaseEmailData purchaseData)
@@ -240,6 +243,76 @@ Please be ready and on time for departure. We're excited to show you an amazing 
 Best regards,
 The Explorer Team
             ";
+        }
+
+        public async Task<Result> SendTourRecommendationAsync(long tourId, TourRecommendationEmailData tourData)
+        {
+            try
+            {
+                // CRITICAL: Get emails IMMEDIATELY, SYNCHRONOUSLY
+                // This ensures we query while DbContext is still alive
+                var interestedEmails = _userNotificationService.GetInterestedUserEmails(tourData.TourCategory);
+
+                if (!interestedEmails.Any())
+                {
+                    _logger.LogInformation("No users found interested in category {Category} for tour {TourId}",
+                        tourData.TourCategory, tourId);
+                    return Result.Ok();
+                }
+
+                _logger.LogInformation("Found {Count} interested users for tour {TourId} in category {Category}",
+                    interestedEmails.Count, tourId, tourData.TourCategory);
+
+                // NOW send emails in background with the email list we already retrieved
+                _ = Task.Run(async () =>
+                {
+                    var emailsSent = 0;
+                    foreach (var email in interestedEmails)
+                    {
+                        try
+                        {
+                            var subject = $"New Tour Recommendation - {tourData.TourName}";
+                            var emailContent = GenerateTourRecommendationEmail(email, tourData);
+                            await SendEmailAsync(email, subject, emailContent);
+                            emailsSent++;
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogWarning(ex, "Failed to send tour recommendation to {Email}", email);
+                        }
+                    }
+
+                    _logger.LogInformation("Sent {Count} tour recommendation emails for tour {TourId}", emailsSent, tourId);
+                });
+
+                return Result.Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error sending tour recommendations for tour {TourId}", tourId);
+                return Result.Fail($"Error sending emails: {ex.Message}");
+            }
+        }
+
+        private string GenerateTourRecommendationEmail(string email, TourRecommendationEmailData data)
+        {
+            return $@"
+Dear Explorer,
+
+Great news! A new tour matching your interests has just been published:
+
+Tour Name: {data.TourName}
+Description: {data.TourDescription}
+Date: {data.TourDate:MMMM dd, yyyy 'at' HH:mm}
+Price: €{data.TourPrice}
+
+This tour was recommended based on your selected interests. Visit our platform to learn more and book this exciting experience!
+
+You can manage your interests and notification preferences in your profile settings.
+
+Best regards,
+The Explorer Team
+    ";
         }
     }
 }

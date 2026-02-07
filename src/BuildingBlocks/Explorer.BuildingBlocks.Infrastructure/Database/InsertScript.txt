@@ -1,39 +1,22 @@
-﻿-- Development Data Seeding Script
--- Run this after migrations to populate your database with realistic test data
+﻿INSERT INTO stakeholders."Users"("Id", "Username", "Password", "Role", "IsActive", "ReceiveRecommendations") VALUES 
+(1, 'admin@explorer.com', 'admin123', 0, true, false),
+(10, 'marko.guide@explorer.com', 'guide123', 1, true, false),
+(11, 'ana.tours@explorer.com', 'guide123', 1, true, false),
+(12, 'stefan.adventure@explorer.com', 'guide123', 1, true, false),
+(13, 'milica.heritage@explorer.com', 'guide123', 1, true, false),
+(20, 'petar.traveler@gmail.com', 'tourist123', 2, true, true),
+(21, 'jovana.explorer@gmail.com', 'tourist123', 2, true, true),
+(22, 'nikola.adventure@gmail.com', 'tourist123', 2, true, true),
+(23, 'tamara.culture@gmail.com', 'tourist123', 2, true, true),
+(24, 'milan.nature@gmail.com', 'tourist123', 2, true, true),
+(25, 'sara.foodie@gmail.com', 'tourist123', 2, true, false);
 
--- ============================================
--- STAKEHOLDERS MODULE - Users and People
--- ============================================
-
--- Insert Users (Admin, Authors, Tourists)
-INSERT INTO stakeholders."Users"("Id", "Username", "Password", "Role", "IsActive") VALUES 
-(1, 'admin@explorer.com', 'admin123', 0, true),
-
--- Tour Guides/Authors
-(10, 'marko.guide@explorer.com', 'guide123', 1, true),
-(11, 'ana.tours@explorer.com', 'guide123', 1, true),
-(12, 'stefan.adventure@explorer.com', 'guide123', 1, true),
-(13, 'milica.heritage@explorer.com', 'guide123', 1, true),
-
--- Tourists
-(20, 'petar.traveler@gmail.com', 'tourist123', 2, true),
-(21, 'jovana.explorer@gmail.com', 'tourist123', 2, true),
-(22, 'nikola.adventure@gmail.com', 'tourist123', 2, true),
-(23, 'tamara.culture@gmail.com', 'tourist123', 2, true),
-(24, 'milan.nature@gmail.com', 'tourist123', 2, true),
-(25, 'sara.foodie@gmail.com', 'tourist123', 2, true);
-
--- Insert People (profile information)
 INSERT INTO stakeholders."People"("Id", "UserId", "Name", "Surname", "Email") VALUES 
 (1, 1, 'Admin', 'User', 'admin@explorer.com'),
-
--- Tour Guides
 (10, 10, 'Marko', 'Petrović', 'marko.guide@explorer.com'),
 (11, 11, 'Ana', 'Jovanović', 'ana.tours@explorer.com'),
 (12, 12, 'Stefan', 'Nikolić', 'stefan.adventure@explorer.com'),
 (13, 13, 'Milica', 'Stojanović', 'milica.heritage@explorer.com'),
-
--- Tourists
 (20, 20, 'Petar', 'Mitrović', 'petar.traveler@gmail.com'),
 (21, 21, 'Jovana', 'Radić', 'jovana.explorer@gmail.com'),
 (22, 22, 'Nikola', 'Stanković', 'nikola.adventure@gmail.com'),
@@ -41,7 +24,6 @@ INSERT INTO stakeholders."People"("Id", "UserId", "Name", "Surname", "Email") VA
 (24, 24, 'Milan', 'Đorđević', 'milan.nature@gmail.com'),
 (25, 25, 'Sara', 'Marković', 'sara.foodie@gmail.com');
 
--- Insert Interests
 INSERT INTO stakeholders."Interests"("Id", "InterestName") VALUES 
 (1, 'Nature'),
 (2, 'Art'),
@@ -49,20 +31,14 @@ INSERT INTO stakeholders."Interests"("Id", "InterestName") VALUES
 (4, 'Shopping'),
 (5, 'Food');
 
--- Insert User Interests (sample interests for tourists)
 INSERT INTO stakeholders."UserInterests"("Id", "UserId", "InterestId") VALUES 
-(1, 20, 1), (2, 20, 3), -- Petar likes Nature and Sport
-(3, 21, 1), (4, 21, 2), -- Jovana likes Nature and Art
-(5, 22, 3), (6, 22, 1), -- Nikola likes Sport and Nature
-(7, 23, 2), (8, 23, 5), -- Tamara likes Art and Food
-(9, 24, 1), (10, 24, 3), -- Milan likes Nature and Sport
-(11, 25, 5), (12, 25, 4); -- Sara likes Food and Shopping
+(1, 20, 1), (2, 20, 3),
+(3, 21, 1), (4, 21, 2),
+(5, 22, 3), (6, 22, 1),
+(7, 23, 2), (8, 23, 5),
+(9, 24, 1), (10, 24, 3),
+(11, 25, 5), (12, 25, 4);
 
--- ============================================
--- TOURS MODULE - Tours, KeyPoints, Equipment
--- ============================================
-
--- Insert Equipment
 INSERT INTO tours."Equipment"("Id", "Name", "Description") VALUES 
 (1, 'Water Bottle', 'Essential hydration for any tour. Recommended 0.5L per hour of moderate activity.'),
 (2, 'Walking Sticks', 'Reduce leg fatigue, enhance upper body activity and provide stability on uneven terrain.'),
@@ -71,91 +47,77 @@ INSERT INTO tours."Equipment"("Id", "Name", "Description") VALUES
 (5, 'Weather Protection', 'Light rain jacket or umbrella depending on season.'),
 (6, 'Camera', 'Capture memories of beautiful locations and experiences.');
 
--- Insert Tours (mix of published and draft)
 INSERT INTO tours."Tours"("Id", "Name", "Description", "Difficulty", "Category", "Price", "Date", "State") VALUES 
--- Published tours (State = 1 = COMPLETE)
 (1, 'Belgrade Old Town Walking Tour', 'Explore the historic heart of Belgrade including Kalemegdan Fortress, Knez Mihailova Street, and traditional kafanas. Perfect introduction to Serbian capital.', 1, 2, 25, '2024-12-20 10:00:00+01:00', 1),
-
 (2, 'Novi Sad Food & Culture Experience', 'Discover the culinary delights of Vojvodina while exploring Novi Sad''s charming Petrovaradin Fortress and historic city center.', 1, 5, 35, '2024-12-22 11:00:00+01:00', 1),
-
 (3, 'Tara National Park Adventure', 'Challenging hike through pristine wilderness, including Drina River viewpoints and traditional mountain villages. For experienced hikers only.', 4, 1, 55, '2024-12-25 08:00:00+01:00', 1),
-
 (4, 'Kopaonik Ski & Nature Tour', 'Winter sports adventure combined with mountain wildlife observation. Equipment provided.', 3, 3, 75, '2025-01-10 09:00:00+01:00', 1),
-
 (5, 'Serbian Monastery Heritage Trail', 'Visit medieval monasteries including Studenica and Žiča. Deep dive into Serbian Orthodox spirituality and Byzantine art.', 2, 2, 45, '2026-01-15 09:30:00+01:00', 1),
-
 (6, 'Danube Delta Boat Excursion', 'Peaceful boat tour through Europe''s second largest river delta. Birdwatching and fishing opportunities included.', 1, 1, 40, '2026-01-20 08:00:00+01:00', 1),
-
 (7, 'Belgrade Nightlife & Entertainment', 'Experience Belgrade''s famous nightlife including floating river clubs, traditional live music venues, and rooftop bars.', 1, 4, 30, '2026-01-25 20:00:00+01:00', 1),
-
 (8, 'Zlatibor Mountain Retreat', 'Relaxing weekend in mountain air with traditional Serbian breakfast, nature walks, and local craft workshops.', 2, 1, 60, '2026-02-01 10:00:00+01:00', 1),
-
--- Draft tours (State = 0 = DRAFT) - not visible to tourists yet
+(9, 'Novi Pazar Historical Walk', 'Explore the multicultural heritage of Novi Pazar including Ottoman architecture, medieval churches, and traditional crafts.', 2, 2, 30, '2026-01-08 10:00:00+01:00', 1),
+(10, 'Šumadija Wine & Nature Tour', 'Visit local wineries and enjoy scenic countryside views in the heart of Serbia.', 1, 5, 40, '2026-01-11 11:00:00+01:00', 1),
 (100, 'Niš Archaeological Discovery', 'Explore ancient Roman ruins including Constantine''s birthplace. Still planning the route and securing permissions.', 2, 2, 35, '2025-02-15 10:00:00+01:00', 0),
-
 (101, 'Vojvodina Wine Tasting Tour', 'Visit local wineries in Srem region. Working with vintners to finalize tasting schedule.', 1, 5, 50, '2025-02-20 11:00:00+01:00', 0);
 
--- Insert Key Points for published tours
--- Belgrade Old Town (Tour 1)
 INSERT INTO tours."KeyPoints"("Id", "TourId", "Name", "Description", "Latitude", "Longitude", "ImageUrl", "Order") VALUES 
 (1, 1, 'Kalemegdan Fortress', 'Historic fortress overlooking Danube and Sava rivers confluence', 44.8225, 20.4516, null, 1),
 (2, 1, 'Knez Mihailova Street', 'Main pedestrian and shopping zone in Belgrade city center', 44.8166, 20.4595, null, 2),
 (3, 1, 'Republic Square', 'Central square with National Theatre and National Museum', 44.8165, 20.4595, null, 3),
-(4, 1, 'Skadarlija Bohemian Quarter', 'Historic cobblestone street with traditional restaurants and live music', 44.8186, 20.4612, null, 4);
-
--- Novi Sad Food Tour (Tour 2)
-INSERT INTO tours."KeyPoints"("Id", "TourId", "Name", "Description", "Latitude", "Longitude", "ImageUrl", "Order") VALUES 
+(4, 1, 'Skadarlija Bohemian Quarter', 'Historic cobblestone street with traditional restaurants and live music', 44.8186, 20.4612, null, 4),
 (5, 2, 'Petrovaradin Fortress', 'Gibraltar on the Danube - massive 18th century fortress complex', 45.2517, 19.8658, null, 1),
 (6, 2, 'Novi Sad City Center', 'Austro-Hungarian architecture and vibrant café culture', 45.2671, 19.8335, null, 2),
 (7, 2, 'Danube Park', 'Beautiful riverside park perfect for traditional pastry tasting', 45.2533, 19.8286, null, 3),
-(8, 2, 'Local Fish Restaurant', 'Traditional Vojvodina fish specialties by the Danube', 45.2445, 19.8423, null, 4);
-
--- Tara National Park (Tour 3) 
-INSERT INTO tours."KeyPoints"("Id", "TourId", "Name", "Description", "Latitude", "Longitude", "ImageUrl", "Order") VALUES 
+(8, 2, 'Local Fish Restaurant', 'Traditional Vojvodina fish specialties by the Danube', 45.2445, 19.8423, null, 4),
 (9, 3, 'Banjska Stena Viewpoint', 'Breathtaking panoramic view over Drina River canyon', 43.9167, 19.4333, null, 1),
 (10, 3, 'Perućac Lake', 'Emerald mountain lake surrounded by pristine forest', 43.8833, 19.3667, null, 2),
-(11, 3, 'Traditional Mountain Village', 'Experience authentic rural Serbian mountain life', 43.9000, 19.4000, null, 3);
-
--- Kopaonik Ski Tour (Tour 4)
-INSERT INTO tours."KeyPoints"("Id", "TourId", "Name", "Description", "Latitude", "Longitude", "ImageUrl", "Order") VALUES 
+(11, 3, 'Traditional Mountain Village', 'Experience authentic rural Serbian mountain life', 43.9000, 19.4000, null, 3),
 (12, 4, 'Kopaonik Ski Center', 'Main ski slopes and equipment rental facility', 43.2833, 20.8167, null, 1),
 (13, 4, 'Pančić Peak', 'Highest peak of Kopaonik mountain range (2017m)', 43.2667, 20.8000, null, 2),
-(14, 4, 'Mountain Wildlife Observation Point', 'Spot deer, wild boar, and various bird species', 43.2900, 20.8200, null, 3);
-
--- Serbian Monasteries (Tour 5)
-INSERT INTO tours."KeyPoints"("Id", "TourId", "Name", "Description", "Latitude", "Longitude", "ImageUrl", "Order") VALUES 
+(14, 4, 'Mountain Wildlife Observation Point', 'Spot deer, wild boar, and various bird species', 43.2900, 20.8200, null, 3),
 (15, 5, 'Studenica Monastery', 'UNESCO World Heritage site, 12th century Serbian Orthodox monastery', 43.4833, 20.5333, null, 1),
-(16, 5, 'Žiča Monastery', 'First seat of Serbian Archbishop, beautiful frescoes and architecture', 43.7000, 20.6167, null, 2);
+(16, 5, 'Žiča Monastery', 'First seat of Serbian Archbishop, beautiful frescoes and architecture', 43.7000, 20.6167, null, 2),
+(17, 9, 'Altun-Alem Mosque', 'Beautiful 16th century mosque with unique architecture', 43.1367, 20.5122, null, 1),
+(18, 9, 'St. Peter and Paul Church', 'Medieval Serbian Orthodox church ruins', 43.1400, 20.5100, null, 2),
+(19, 9, 'Old Bazaar', 'Traditional craftsmen quarter with authentic workshops', 43.1350, 20.5130, null, 3),
+(20, 10, 'Oplenac Royal Complex', 'Stunning mausoleum and royal vineyards', 44.2167, 20.7333, null, 1),
+(21, 10, 'Local Winery Aleksandrović', 'Award-winning Serbian wine tasting', 44.2100, 20.7200, null, 2);
 
--- ============================================
--- PURCHASE-RELATED DATA (Optional - for testing)
--- ============================================
-
--- Insert some bonus points for tourists (from previous tour cancellations)
 INSERT INTO tours."BonusPoints"("Id", "TouristId", "AvailablePoints", "CreatedAt", "UpdatedAt") VALUES 
-(1, 20, 25.00, '2024-11-01 10:00:00+01:00', '2024-11-01 10:00:00+01:00'), -- Petar has 25 bonus points
-(2, 21, 15.00, '2024-11-15 14:30:00+01:00', '2024-11-15 14:30:00+01:00'), -- Jovana has 15 bonus points
-(3, 23, 40.00, '2024-10-20 09:15:00+01:00', '2024-10-20 09:15:00+01:00'); -- Tamara has 40 bonus points
+(1, 20, 25.00, '2024-11-01 10:00:00+01:00', '2024-11-01 10:00:00+01:00'),
+(2, 21, 15.00, '2024-11-15 14:30:00+01:00', '2024-11-15 14:30:00+01:00'),
+(3, 23, 0.00, '2024-10-20 09:15:00+01:00', '2024-12-28 11:00:00+01:00');
 
--- Insert bonus transactions history
 INSERT INTO tours."BonusTransactions"("Id", "TouristId", "Amount", "Type", "Description", "RelatedTourId", "RelatedPurchaseId", "CreatedAt") VALUES 
 (1, 20, 25.00, 0, 'Tour cancelled by guide - refund as bonus points', 999, null, '2024-11-01 10:00:00+01:00'),
 (2, 21, 15.00, 0, 'Tour cancelled due to weather - bonus points compensation', 998, null, '2024-11-15 14:30:00+01:00'),
-(3, 23, 40.00, 0, 'Tour cancelled by guide - refund as bonus points', 997, null, '2024-10-20 09:15:00+01:00');
+(3, 23, 40.00, 0, 'Tour cancelled by guide - refund as bonus points', 997, null, '2024-10-20 09:15:00+01:00'),
+(4, 23, -40.00, 1, 'Used bonus points for tour purchase', null, 5, '2024-12-28 11:00:00+01:00');
 
--- Insert sample shopping cart for one tourist
 INSERT INTO tours."ShoppingCarts"("Id", "TouristId", "TourIds", "CreatedAt", "UpdatedAt") VALUES 
-(1, 22, '[1, 2]', '2024-12-01 15:30:00+01:00', '2024-12-01 16:45:00+01:00'); -- Nikola has Belgrade and Novi Sad tours in cart
+(1, 22, '[1, 2]', '2024-12-01 15:30:00+01:00', '2024-12-01 16:45:00+01:00');
 
--- Insert a sample completed purchase
 INSERT INTO tours."TourPurchases"("Id", "TouristId", "TourIds", "TotalAmount", "BonusPointsUsed", "FinalAmount", "PurchaseDate", "Status", "ReminderSent") VALUES 
-(1, 24, '[6, 7]', 70.00, 0.00, 70.00, '2024-11-20 12:00:00+01:00', 0, true); -- Milan bought Danube and Nightlife tours
+(1, 24, '[6, 7]', 70.00, 0.00, 70.00, '2024-11-20 12:00:00+01:00', 0, true),
+(2, 20, '[1]', 25.00, 0.00, 25.00, '2024-12-10 10:00:00+01:00', 0, true),
+(3, 21, '[2]', 35.00, 0.00, 35.00, '2024-12-15 09:00:00+01:00', 0, true),
+(4, 22, '[3]', 55.00, 0.00, 55.00, '2024-12-18 14:30:00+01:00', 0, true),
+(5, 23, '[4, 5, 6]', 160.00, 40.00, 120.00, '2024-12-28 11:00:00+01:00', 0, true),
+(6, 25, '[7, 8]', 90.00, 0.00, 90.00, '2025-01-05 16:20:00+01:00', 0, false),
+(7, 24, '[9]', 30.00, 0.00, 30.00, '2026-01-03 09:15:00+01:00', 0, true),
+(8, 25, '[10]', 40.00, 0.00, 40.00, '2026-01-08 13:45:00+01:00', 0, true);
 
--- Add corresponding bonus transaction for the purchase (none in this case since no bonus points used)
+INSERT INTO tours."TourReviews"("Id", "TourPurchaseId", "TourId", "TouristId", "Rating", "Comment", "ReviewDate") VALUES 
+(1, 2, 1, 20, 5, 'Fantastična tura! Vodič je bio veoma informativan i zabavan. Kalemegdan je prelepa lokacija.', '2024-12-21 15:30:00+01:00'),
+(2, 3, 2, 21, 2, 'Hrana je bila dobra ali organizacija je mogla biti bolja. Previše čekanja između lokacija.', '2024-12-23 18:45:00+01:00'),
+(3, 4, 3, 22, 5, 'Nezaboravno iskustvo! Prelepi pogledi i odličan vodič. Definitivno vredan svakog dinara.', '2024-12-26 20:10:00+01:00'),
+(4, 5, 4, 23, 4, 'Odlično skijaško iskustvo! Jedini minus je što je bilo mnogo ljudi na stazi.', '2025-01-11 14:20:00+01:00');
 
 SELECT SETVAL('stakeholders."Interests_Id_seq"', COALESCE(MAX("Id"), 1)) FROM stakeholders."Interests";
 SELECT SETVAL('stakeholders."Users_Id_seq"', COALESCE(MAX("Id"), 1)) FROM stakeholders."Users";
 SELECT SETVAL('stakeholders."People_Id_seq"', COALESCE(MAX("Id"), 1)) FROM stakeholders."People";
+SELECT SETVAL('stakeholders."UserInterests_Id_seq"', COALESCE(MAX("Id"), 1)) FROM stakeholders."UserInterests";
 SELECT SETVAL('tours."BonusPoints_Id_seq"', COALESCE(MAX("Id"), 1)) FROM tours."BonusPoints";
 SELECT SETVAL('tours."BonusTransactions_Id_seq"', COALESCE(MAX("Id"), 1)) FROM tours."BonusTransactions";
 SELECT SETVAL('tours."Equipment_Id_seq"', COALESCE(MAX("Id"), 1)) FROM tours."Equipment";
@@ -163,148 +125,4 @@ SELECT SETVAL('tours."KeyPoints_Id_seq"', COALESCE(MAX("Id"), 1)) FROM tours."Ke
 SELECT SETVAL('tours."ShoppingCarts_Id_seq"', COALESCE(MAX("Id"), 1)) FROM tours."ShoppingCarts";
 SELECT SETVAL('tours."TourPurchases_Id_seq"', COALESCE(MAX("Id"), 1)) FROM tours."TourPurchases";
 SELECT SETVAL('tours."Tours_Id_seq"', COALESCE(MAX("Id"), 1)) FROM tours."Tours";
-
--- ============================================
--- Summary of created data:
--- - 1 Admin user
--- - 4 Tour guides with different specialties
--- - 6 Tourists with various interests  
--- - 5 Interest categories
--- - 6 Equipment items
--- - 8 Published tours (different difficulties, categories, dates)
--- - 2 Draft tours (not visible to tourists)
--- - 16 Key points across the published tours
--- - Sample bonus points and purchase history for testing
--- ============================================
-
--- Purchase 2: Petar bought Belgrade tour (happened on Dec 20, 2024 - more than 7 days ago)
-INSERT INTO tours."TourPurchases"("Id", "TouristId", "TourIds", "TotalAmount", "BonusPointsUsed", "FinalAmount", "PurchaseDate", "Status", "ReminderSent") VALUES 
-(2, 20, '[1]', 25.00, 0.00, 25.00, '2024-12-10 10:00:00+01:00', 0, true);
-
--- Purchase 3: Jovana bought Novi Sad tour (happened on Dec 22, 2024 - more than 7 days ago)
-INSERT INTO tours."TourPurchases"("Id", "TouristId", "TourIds", "TotalAmount", "BonusPointsUsed", "FinalAmount", "PurchaseDate", "Status", "ReminderSent") VALUES 
-(3, 21, '[2]', 35.00, 0.00, 35.00, '2024-12-15 09:00:00+01:00', 0, true);
-
--- Purchase 4: Nikola bought Tara National Park tour (happened on Dec 25, 2024 - more than 7 days ago)
-INSERT INTO tours."TourPurchases"("Id", "TouristId", "TourIds", "TotalAmount", "BonusPointsUsed", "FinalAmount", "PurchaseDate", "Status", "ReminderSent") VALUES 
-(4, 22, '[3]', 55.00, 0.00, 55.00, '2024-12-18 14:30:00+01:00', 0, true);
-
--- Purchase 5: Tamara bought multiple tours including future ones
--- Tour 4 (Kopaonik) is on Jan 10, 2025 - SHOULD BE REVIEWABLE (happened 3 days ago from today Jan 13)
-INSERT INTO tours."TourPurchases"("Id", "TouristId", "TourIds", "TotalAmount", "BonusPointsUsed", "FinalAmount", "PurchaseDate", "Status", "ReminderSent") VALUES 
-(5, 23, '[4, 5, 6]', 160.00, 40.00, 120.00, '2024-12-28 11:00:00+01:00', 0, true);
-
--- Purchase 6: Sara bought upcoming tours (all in future - NOT reviewable yet)
-INSERT INTO tours."TourPurchases"("Id", "TouristId", "TourIds", "TotalAmount", "BonusPointsUsed", "FinalAmount", "PurchaseDate", "Status", "ReminderSent") VALUES 
-(6, 25, '[7, 8]', 90.00, 0.00, 90.00, '2025-01-05 16:20:00+01:00', 0, false);
-
--- Update bonus transaction for Tamara's purchase (she used 40 bonus points)
-INSERT INTO tours."BonusTransactions"("Id", "TouristId", "Amount", "Type", "Description", "RelatedTourId", "RelatedPurchaseId", "CreatedAt") VALUES 
-(4, 23, -40.00, 1, 'Used bonus points for tour purchase', null, 5, '2024-12-28 11:00:00+01:00');
-
--- Update Tamara's bonus points (subtract the 40 she used)
-UPDATE tours."BonusPoints" 
-SET "AvailablePoints" = 0.00, "UpdatedAt" = '2024-12-28 11:00:00+01:00'
-WHERE "TouristId" = 23;
-
--- ============================================
--- TOUR REVIEWS - Sample reviews for testing
--- ============================================
-
--- Review 1: Petar reviewed Belgrade tour (Tour 1) - completed more than 7 days ago
--- This is from Purchase 2, Tour 1
-INSERT INTO tours."TourReviews"("Id", "TourPurchaseId", "TourId", "TouristId", "Rating", "Comment", "ReviewDate") VALUES 
-(1, 2, 1, 20, 5, 'Fantastična tura! Vodič je bio veoma informativan i zabavan. Kalemegdan je prelepa lokacija.', '2024-12-21 15:30:00+01:00');
-
--- Review 2: Jovana reviewed Novi Sad tour (Tour 2) - with lower rating and required comment
-INSERT INTO tours."TourReviews"("Id", "TourPurchaseId", "TourId", "TouristId", "Rating", "Comment", "ReviewDate") VALUES 
-(2, 3, 2, 21, 2, 'Hrana je bila dobra ali organizacija je mogla biti bolja. Previše čekanja između lokacija.', '2024-12-23 18:45:00+01:00');
-
--- Review 3: Nikola reviewed Tara tour (Tour 3) - excellent rating
-INSERT INTO tours."TourReviews"("Id", "TourPurchaseId", "TourId", "TouristId", "Rating", "Comment", "ReviewDate") VALUES 
-(3, 4, 3, 22, 5, 'Nezaboravno iskustvo! Prelepi pogledi i odličan vodič. Definitivno vredan svakog dinara.', '2024-12-26 20:10:00+01:00');
-
--- Review 4: Tamara reviewed Kopaonik tour (Tour 4) - this one happened 3 days ago so it's in the reviewable window!
-INSERT INTO tours."TourReviews"("Id", "TourPurchaseId", "TourId", "TouristId", "Rating", "Comment", "ReviewDate") VALUES 
-(4, 5, 4, 23, 4, 'Odlično skijaško iskustvo! Jedini minus je što je bilo mnogo ljudi na stazi.', '2025-01-11 14:20:00+01:00');
-
--- ============================================
--- UPDATE SEQUENCES
--- ============================================
-
-SELECT SETVAL('tours."TourPurchases_Id_seq"', COALESCE(MAX("Id"), 1)) FROM tours."TourPurchases";
-SELECT SETVAL('tours."BonusTransactions_Id_seq"', COALESCE(MAX("Id"), 1)) FROM tours."BonusTransactions";
 SELECT SETVAL('tours."TourReviews_Id_seq"', COALESCE(MAX("Id"), 1)) FROM tours."TourReviews";
-
--- ============================================
--- REVIEW TEST DATA SUMMARY:
--- ============================================
--- Purchase 1 (Milan): Tours 6 & 7 - both in future, NOT reviewable yet
--- Purchase 2 (Petar): Tour 1 - happened Dec 20 (>7 days ago), already reviewed, CAN'T review again
--- Purchase 3 (Jovana): Tour 2 - happened Dec 22 (>7 days ago), already reviewed, CAN'T review again  
--- Purchase 4 (Nikola): Tour 3 - happened Dec 25 (>7 days ago), already reviewed, CAN'T review again
--- Purchase 5 (Tamara): 
---   - Tour 4 (Kopaonik) - happened Jan 10 (3 days ago), already reviewed, CAN'T review again
---   - Tour 5 (Monasteries) - future (Jan 15), NOT reviewable yet
---   - Tour 6 (Danube) - future (Jan 20), NOT reviewable yet
--- Purchase 6 (Sara): Tours 7 & 8 - both in future, NOT reviewable yet
---
--- TO TEST REVIEWABILITY:
--- Need to create a NEW purchase with a tour date between Jan 6-12, 2025 (1-7 days ago from today)
--- ============================================
-
--- ============================================
--- ADDITIONAL TEST PURCHASE FOR FULL REVIEW TESTING
--- ============================================
-
--- First, we need to create a tour that happened recently (within review window)
--- Tour 9: A tour that happened 5 days ago (Jan 8, 2025) - PERFECT for review testing!
-INSERT INTO tours."Tours"("Id", "Name", "Description", "Difficulty", "Category", "Price", "Date", "State") VALUES 
-(9, 'Novi Pazar Historical Walk', 'Explore the multicultural heritage of Novi Pazar including Ottoman architecture, medieval churches, and traditional crafts.', 2, 2, 30, '2026-01-08 10:00:00+01:00', 1);
-
--- Add key points for this tour
-INSERT INTO tours."KeyPoints"("Id", "TourId", "Name", "Description", "Latitude", "Longitude", "ImageUrl", "Order") VALUES 
-(17, 9, 'Altun-Alem Mosque', 'Beautiful 16th century mosque with unique architecture', 43.1367, 20.5122, null, 1),
-(18, 9, 'St. Peter and Paul Church', 'Medieval Serbian Orthodox church ruins', 43.1400, 20.5100, null, 2),
-(19, 9, 'Old Bazaar', 'Traditional craftsmen quarter with authentic workshops', 43.1350, 20.5130, null, 3);
-
--- Purchase 7: Milan bought this recently completed tour - SHOULD BE REVIEWABLE!
-INSERT INTO tours."TourPurchases"("Id", "TouristId", "TourIds", "TotalAmount", "BonusPointsUsed", "FinalAmount", "PurchaseDate", "Status", "ReminderSent") VALUES 
-(7, 24, '[9]', 30.00, 0.00, 30.00, '2026-01-03 09:15:00+01:00', 0, true);
-
--- Tour 10: Another recent tour (happened 2 days ago - Jan 11, 2025)
-INSERT INTO tours."Tours"("Id", "Name", "Description", "Difficulty", "Category", "Price", "Date", "State") VALUES 
-(10, 'Šumadija Wine & Nature Tour', 'Visit local wineries and enjoy scenic countryside views in the heart of Serbia.', 1, 5, 40, '2026-01-11 11:00:00+01:00', 1);
-
-INSERT INTO tours."KeyPoints"("Id", "TourId", "Name", "Description", "Latitude", "Longitude", "ImageUrl", "Order") VALUES 
-(20, 10, 'Oplenac Royal Complex', 'Stunning mausoleum and royal vineyards', 44.2167, 20.7333, null, 1),
-(21, 10, 'Local Winery Aleksandrović', 'Award-winning Serbian wine tasting', 44.2100, 20.7200, null, 2);
-
--- Purchase 8: Sara bought this recent tour - SHOULD BE REVIEWABLE!
-INSERT INTO tours."TourPurchases"("Id", "TouristId", "TourIds", "TotalAmount", "BonusPointsUsed", "FinalAmount", "PurchaseDate", "Status", "ReminderSent") VALUES 
-(8, 25, '[10]', 40.00, 0.00, 40.00, '2026-01-08 13:45:00+01:00', 0, true);
-
--- Update sequences for new tours and purchases
-SELECT SETVAL('tours."Tours_Id_seq"', COALESCE(MAX("Id"), 1)) FROM tours."Tours";
-SELECT SETVAL('tours."KeyPoints_Id_seq"', COALESCE(MAX("Id"), 1)) FROM tours."KeyPoints";
-SELECT SETVAL('tours."TourPurchases_Id_seq"', COALESCE(MAX("Id"), 1)) FROM tours."TourPurchases";
-
--- ============================================
--- FINAL TEST SCENARIOS AVAILABLE:
--- ============================================
--- 1. Milan (ID: 24) CAN review Tour 9 (Novi Pazar) from Purchase 7
---    - Tour happened 5 days ago (Jan 8)
---    - Within 7-day window ✅
---    - Not reviewed yet ✅
---
--- 2. Sara (ID: 25) CAN review Tour 10 (Šumadija) from Purchase 8  
---    - Tour happened 2 days ago (Jan 11)
---    - Within 7-day window ✅
---    - Not reviewed yet ✅
---
--- 3. Petar (ID: 20) CANNOT review Tour 1 again (already reviewed)
---
--- 4. Tamara (ID: 23) CANNOT review Tour 5 or 6 (future tours)
---
--- 5. Any tourist trying to review tours from >7 days ago should fail
--- ============================================

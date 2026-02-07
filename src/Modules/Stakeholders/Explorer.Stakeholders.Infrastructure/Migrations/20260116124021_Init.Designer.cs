@@ -11,7 +11,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Explorer.Stakeholders.Infrastructure.Migrations
 {
     [DbContext(typeof(StakeholdersContext))]
-    [Migration("20260113130714_Init")]
+    [Migration("20260116124021_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -87,6 +87,9 @@ namespace Explorer.Stakeholders.Infrastructure.Migrations
                     b.Property<string>("Password")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<bool>("ReceiveRecommendations")
+                        .HasColumnType("boolean");
 
                     b.Property<int>("Role")
                         .HasColumnType("integer");
