@@ -8,13 +8,15 @@ public class User : Entity
     public string Password { get; private set; }
     public UserRole Role { get; private set; }
     public bool IsActive { get; set; }
+    public bool ReceiveRecommendations { get; private set; }
 
-    public User(string username, string password, UserRole role, bool isActive)
+    public User(string username, string password, UserRole role, bool isActive, bool receiveRecommendations = true)
     {
         Username = username;
         Password = password;
         Role = role;
         IsActive = isActive;
+        ReceiveRecommendations = receiveRecommendations;
         Validate();
     }
 
@@ -22,6 +24,11 @@ public class User : Entity
     {
         if (string.IsNullOrWhiteSpace(Username)) throw new ArgumentException("Invalid Name");
         if (string.IsNullOrWhiteSpace(Password)) throw new ArgumentException("Invalid Surname");
+    }
+
+    public void UpdateRecommendationPreference(bool receiveRecommendations)
+    {
+        ReceiveRecommendations = receiveRecommendations;
     }
 
     public string GetPrimaryRoleName()

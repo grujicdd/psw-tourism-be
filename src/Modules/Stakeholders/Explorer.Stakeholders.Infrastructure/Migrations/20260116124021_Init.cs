@@ -38,7 +38,8 @@ namespace Explorer.Stakeholders.Infrastructure.Migrations
                     Username = table.Column<string>(type: "text", nullable: false),
                     Password = table.Column<string>(type: "text", nullable: false),
                     Role = table.Column<int>(type: "integer", nullable: false),
-                    IsActive = table.Column<bool>(type: "boolean", nullable: false)
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
+                    ReceiveRecommendations = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {

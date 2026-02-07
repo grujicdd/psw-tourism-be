@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Explorer.Tours.Infrastructure.Migrations
 {
     [DbContext(typeof(ToursContext))]
-    [Migration("20260113130728_Init")]
+    [Migration("20260116124036_Init")]
     partial class Init
     {
         /// <inheritdoc />
