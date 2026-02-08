@@ -30,7 +30,7 @@ public static class StakeholdersStartup
         services.AddScoped<ITokenGenerator, JwtGenerator>();
         services.AddScoped<ITouristProfileService, TouristProfileService>();
         services.AddScoped<IUserNotificationService, UserNotificationService>();
-
+        services.AddScoped<IAdministrationService, AdministrationService>();
     }
 
     private static void SetupInfrastructure(IServiceCollection services)
