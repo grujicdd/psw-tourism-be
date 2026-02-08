@@ -9,6 +9,8 @@ public class User : Entity
     public UserRole Role { get; private set; }
     public bool IsActive { get; set; }
     public bool ReceiveRecommendations { get; private set; }
+    public int FailedLoginAttempts { get; private set; }
+    public int BlockCount { get; private set; }
 
     public User(string username, string password, UserRole role, bool isActive, bool receiveRecommendations = true)
     {
@@ -17,6 +19,8 @@ public class User : Entity
         Role = role;
         IsActive = isActive;
         ReceiveRecommendations = receiveRecommendations;
+        FailedLoginAttempts = 0;
+        BlockCount = 0;
         Validate();
     }
 
@@ -34,6 +38,42 @@ public class User : Entity
     public string GetPrimaryRoleName()
     {
         return Role.ToString().ToLower();
+    }
+
+    public void IncrementFailedLoginAttempts()
+    {
+        FailedLoginAttempts++;
+        if (FailedLoginAttempts >= 5)
+        {
+            BlockUser();
+        }
+    }
+
+    public void ResetFailedLoginAttempts()
+    {
+        FailedLoginAttempts = 0;
+    }
+
+    private void BlockUser()
+    {
+        IsActive = false;
+        BlockCount++;
+        FailedLoginAttempts = 0;
+    }
+
+    public bool CanBeUnblocked()
+    {
+        return BlockCount < 3;
+    }
+
+    public void Unblock()
+    {
+        if (!CanBeUnblocked())
+        {
+            throw new InvalidOperationException("User has been blocked 3 times and cannot be unblocked.");
+        }
+        IsActive = true;
+        FailedLoginAttempts = 0;
     }
 }
 

@@ -39,7 +39,9 @@ namespace Explorer.Stakeholders.Infrastructure.Migrations
                     Password = table.Column<string>(type: "text", nullable: false),
                     Role = table.Column<int>(type: "integer", nullable: false),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false),
-                    ReceiveRecommendations = table.Column<bool>(type: "boolean", nullable: false)
+                    ReceiveRecommendations = table.Column<bool>(type: "boolean", nullable: false),
+                    FailedLoginAttempts = table.Column<int>(type: "integer", nullable: false),
+                    BlockCount = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {

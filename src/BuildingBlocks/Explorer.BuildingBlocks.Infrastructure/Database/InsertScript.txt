@@ -1,15 +1,16 @@
-﻿INSERT INTO stakeholders."Users"("Id", "Username", "Password", "Role", "IsActive", "ReceiveRecommendations") VALUES 
-(1, 'admin@explorer.com', 'admin123', 0, true, false),
-(10, 'marko.guide@explorer.com', 'guide123', 1, true, false),
-(11, 'ana.tours@explorer.com', 'guide123', 1, true, false),
-(12, 'stefan.adventure@explorer.com', 'guide123', 1, true, false),
-(13, 'milica.heritage@explorer.com', 'guide123', 1, true, false),
-(20, 'petar.traveler@gmail.com', 'tourist123', 2, true, true),
-(21, 'jovana.explorer@gmail.com', 'tourist123', 2, true, true),
-(22, 'nikola.adventure@gmail.com', 'tourist123', 2, true, true),
-(23, 'tamara.culture@gmail.com', 'tourist123', 2, true, true),
-(24, 'milan.nature@gmail.com', 'tourist123', 2, true, true),
-(25, 'sara.foodie@gmail.com', 'tourist123', 2, true, false);
+﻿-- Updated Users INSERT with FailedLoginAttempts and BlockCount columns
+INSERT INTO stakeholders."Users"("Id", "Username", "Password", "Role", "IsActive", "ReceiveRecommendations", "FailedLoginAttempts", "BlockCount") VALUES 
+(1, 'admin@explorer.com', 'admin123', 0, true, false, 0, 0),
+(10, 'marko.guide@explorer.com', 'guide123', 1, true, false, 0, 0),
+(11, 'ana.tours@explorer.com', 'guide123', 1, true, false, 0, 0),
+(12, 'stefan.adventure@explorer.com', 'guide123', 1, true, false, 0, 0),
+(13, 'milica.heritage@explorer.com', 'guide123', 1, true, false, 0, 0),
+(20, 'petar.traveler@gmail.com', 'tourist123', 2, true, true, 0, 0),
+(21, 'jovana.explorer@gmail.com', 'tourist123', 2, true, true, 0, 0),
+(22, 'nikola.adventure@gmail.com', 'tourist123', 2, true, true, 0, 0),
+(23, 'tamara.culture@gmail.com', 'tourist123', 2, true, true, 0, 0),
+(24, 'milan.nature@gmail.com', 'tourist123', 2, true, true, 0, 0),
+(25, 'sara.foodie@gmail.com', 'tourist123', 2, true, false, 0, 0);
 
 INSERT INTO stakeholders."People"("Id", "UserId", "Name", "Surname", "Email") VALUES 
 (1, 1, 'Admin', 'User', 'admin@explorer.com'),
@@ -114,6 +115,7 @@ INSERT INTO tours."TourReviews"("Id", "TourPurchaseId", "TourId", "TouristId", "
 (3, 4, 3, 22, 5, 'Nezaboravno iskustvo! Prelepi pogledi i odličan vodič. Definitivno vredan svakog dinara.', '2024-12-26 20:10:00+01:00'),
 (4, 5, 4, 23, 4, 'Odlično skijaško iskustvo! Jedini minus je što je bilo mnogo ljudi na stazi.', '2025-01-11 14:20:00+01:00');
 
+-- Sync sequences
 SELECT SETVAL('stakeholders."Interests_Id_seq"', COALESCE(MAX("Id"), 1)) FROM stakeholders."Interests";
 SELECT SETVAL('stakeholders."Users_Id_seq"', COALESCE(MAX("Id"), 1)) FROM stakeholders."Users";
 SELECT SETVAL('stakeholders."People_Id_seq"', COALESCE(MAX("Id"), 1)) FROM stakeholders."People";
