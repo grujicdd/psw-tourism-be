@@ -42,7 +42,7 @@ namespace Explorer.Tours.Infrastructure.Migrations
                     TouristId = table.Column<long>(type: "bigint", nullable: false),
                     Amount = table.Column<decimal>(type: "numeric(10,2)", precision: 10, scale: 2, nullable: false),
                     Type = table.Column<int>(type: "integer", nullable: false),
-                    Description = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: false),
                     RelatedTourId = table.Column<long>(type: "bigint", nullable: true),
                     RelatedPurchaseId = table.Column<long>(type: "bigint", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
@@ -105,6 +105,28 @@ namespace Explorer.Tours.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "TourProblems",
+                schema: "tours",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    TourId = table.Column<long>(type: "bigint", nullable: false),
+                    TouristId = table.Column<long>(type: "bigint", nullable: false),
+                    Title = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: false),
+                    Status = table.Column<int>(type: "integer", nullable: false),
+                    ReportedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    ResolvedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    ReviewRequestedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    RejectedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TourProblems", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "TourPurchases",
                 schema: "tours",
                 columns: table => new
@@ -113,9 +135,9 @@ namespace Explorer.Tours.Infrastructure.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     TouristId = table.Column<long>(type: "bigint", nullable: false),
                     TourIds = table.Column<string>(type: "jsonb", nullable: false),
-                    TotalAmount = table.Column<decimal>(type: "numeric(10,2)", precision: 10, scale: 2, nullable: false),
-                    BonusPointsUsed = table.Column<decimal>(type: "numeric(10,2)", precision: 10, scale: 2, nullable: false),
-                    FinalAmount = table.Column<decimal>(type: "numeric(10,2)", precision: 10, scale: 2, nullable: false),
+                    TotalAmount = table.Column<decimal>(type: "numeric", nullable: false),
+                    BonusPointsUsed = table.Column<decimal>(type: "numeric", nullable: false),
+                    FinalAmount = table.Column<decimal>(type: "numeric", nullable: false),
                     PurchaseDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     Status = table.Column<int>(type: "integer", nullable: false),
                     ReminderSent = table.Column<bool>(type: "boolean", nullable: false)
@@ -136,7 +158,7 @@ namespace Explorer.Tours.Infrastructure.Migrations
                     TourId = table.Column<long>(type: "bigint", nullable: false),
                     TouristId = table.Column<long>(type: "bigint", nullable: false),
                     Rating = table.Column<int>(type: "integer", nullable: false),
-                    Comment = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
+                    Comment = table.Column<string>(type: "text", nullable: true),
                     ReviewDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
@@ -151,6 +173,7 @@ namespace Explorer.Tours.Infrastructure.Migrations
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    AuthorId = table.Column<long>(type: "bigint", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: false),
                     Difficulty = table.Column<int>(type: "integer", nullable: false),
@@ -197,6 +220,24 @@ namespace Explorer.Tours.Infrastructure.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_TourProblems_Status",
+                schema: "tours",
+                table: "TourProblems",
+                column: "Status");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TourProblems_TourId",
+                schema: "tours",
+                table: "TourProblems",
+                column: "TourId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TourProblems_TouristId",
+                schema: "tours",
+                table: "TourProblems",
+                column: "TouristId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_TourPurchases_PurchaseDate",
                 schema: "tours",
                 table: "TourPurchases",
@@ -225,13 +266,6 @@ namespace Explorer.Tours.Infrastructure.Migrations
                 schema: "tours",
                 table: "TourReviews",
                 column: "TourPurchaseId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_TourReviews_TourPurchaseId_TourId",
-                schema: "tours",
-                table: "TourReviews",
-                columns: new[] { "TourPurchaseId", "TourId" },
-                unique: true);
         }
 
         /// <inheritdoc />
@@ -255,6 +289,10 @@ namespace Explorer.Tours.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "ShoppingCarts",
+                schema: "tours");
+
+            migrationBuilder.DropTable(
+                name: "TourProblems",
                 schema: "tours");
 
             migrationBuilder.DropTable(

@@ -1,5 +1,4 @@
-﻿// src/Modules/Tours/Explorer.Tours.Infrastructure/Database/ToursContext.cs
-using Explorer.Tours.Core.Domain;
+﻿using Explorer.Tours.Core.Domain;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 
@@ -18,6 +17,9 @@ public class ToursContext : DbContext
     public DbSet<BonusTransaction> BonusTransactions { get; set; }
     public DbSet<TourReview> TourReviews { get; set; }
 
+    // Problem reporting
+    public DbSet<TourProblem> TourProblems { get; set; }
+
     public ToursContext(DbContextOptions<ToursContext> options) : base(options) { }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -30,6 +32,7 @@ public class ToursContext : DbContext
         ConfigureBonusPoints(modelBuilder);
         ConfigureBonusTransaction(modelBuilder);
         ConfigureTourReview(modelBuilder);
+        ConfigureTourProblem(modelBuilder);
     }
 
     private static void ConfigureTour(ModelBuilder modelBuilder)
@@ -68,22 +71,8 @@ public class ToursContext : DbContext
                 v => JsonSerializer.Serialize(v, (JsonSerializerOptions)null),
                 v => JsonSerializer.Deserialize<List<long>>(v, (JsonSerializerOptions)null) ?? new List<long>()
             )
-            .HasColumnType("jsonb"); // PostgreSQL JSON type
+            .HasColumnType("jsonb");
 
-        // Configure decimal precision for money values
-        modelBuilder.Entity<TourPurchase>()
-            .Property(tp => tp.TotalAmount)
-            .HasPrecision(10, 2);
-
-        modelBuilder.Entity<TourPurchase>()
-            .Property(tp => tp.BonusPointsUsed)
-            .HasPrecision(10, 2);
-
-        modelBuilder.Entity<TourPurchase>()
-            .Property(tp => tp.FinalAmount)
-            .HasPrecision(10, 2);
-
-        // Index for performance
         modelBuilder.Entity<TourPurchase>()
             .HasIndex(tp => tp.TouristId);
 
@@ -96,15 +85,13 @@ public class ToursContext : DbContext
         modelBuilder.Entity<BonusPoints>()
             .HasKey(bp => bp.Id);
 
-        // Configure decimal precision
         modelBuilder.Entity<BonusPoints>()
             .Property(bp => bp.AvailablePoints)
             .HasPrecision(10, 2);
 
-        // One bonus points record per tourist
         modelBuilder.Entity<BonusPoints>()
             .HasIndex(bp => bp.TouristId)
-            .IsUnique();
+            .IsUnique(); // One bonus points record per tourist
     }
 
     private static void ConfigureBonusTransaction(ModelBuilder modelBuilder)
@@ -112,26 +99,18 @@ public class ToursContext : DbContext
         modelBuilder.Entity<BonusTransaction>()
             .HasKey(bt => bt.Id);
 
-        // Configure decimal precision
         modelBuilder.Entity<BonusTransaction>()
             .Property(bt => bt.Amount)
             .HasPrecision(10, 2);
 
-        // Required fields
-        modelBuilder.Entity<BonusTransaction>()
-            .Property(bt => bt.Description)
-            .IsRequired()
-            .HasMaxLength(500);
-
-        // Indexes for performance
         modelBuilder.Entity<BonusTransaction>()
             .HasIndex(bt => bt.TouristId);
 
         modelBuilder.Entity<BonusTransaction>()
-            .HasIndex(bt => bt.CreatedAt);
+            .HasIndex(bt => bt.Type);
 
         modelBuilder.Entity<BonusTransaction>()
-            .HasIndex(bt => bt.Type);
+            .HasIndex(bt => bt.CreatedAt);
     }
 
     private static void ConfigureTourReview(ModelBuilder modelBuilder)
@@ -139,24 +118,28 @@ public class ToursContext : DbContext
         modelBuilder.Entity<TourReview>()
             .HasKey(tr => tr.Id);
 
-        // Indexes for performance
-        modelBuilder.Entity<TourReview>()
-            .HasIndex(tr => tr.TouristId);
-
         modelBuilder.Entity<TourReview>()
             .HasIndex(tr => tr.TourId);
 
         modelBuilder.Entity<TourReview>()
+            .HasIndex(tr => tr.TouristId);
+
+        modelBuilder.Entity<TourReview>()
             .HasIndex(tr => tr.TourPurchaseId);
+    }
 
-        // Composite unique index: one review per tour per purchase
-        modelBuilder.Entity<TourReview>()
-            .HasIndex(tr => new { tr.TourPurchaseId, tr.TourId })
-            .IsUnique();
+    private static void ConfigureTourProblem(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<TourProblem>()
+            .HasKey(tp => tp.Id);
 
-        // Optional: Configure comment max length
-        modelBuilder.Entity<TourReview>()
-            .Property(tr => tr.Comment)
-            .HasMaxLength(1000);
+        modelBuilder.Entity<TourProblem>()
+            .HasIndex(tp => tp.TourId);
+
+        modelBuilder.Entity<TourProblem>()
+            .HasIndex(tp => tp.TouristId);
+
+        modelBuilder.Entity<TourProblem>()
+            .HasIndex(tp => tp.Status);
     }
 }

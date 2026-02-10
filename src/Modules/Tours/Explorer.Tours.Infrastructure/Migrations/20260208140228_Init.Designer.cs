@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Explorer.Tours.Infrastructure.Migrations
 {
     [DbContext(typeof(ToursContext))]
-    [Migration("20260207165301_Init")]
+    [Migration("20260208140228_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -72,8 +72,7 @@ namespace Explorer.Tours.Infrastructure.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("text");
 
                     b.Property<long?>("RelatedPurchaseId")
                         .HasColumnType("bigint");
@@ -191,6 +190,9 @@ namespace Explorer.Tours.Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
+                    b.Property<long>("AuthorId")
+                        .HasColumnType("bigint");
+
                     b.Property<int>("Category")
                         .HasColumnType("integer");
 
@@ -219,6 +221,54 @@ namespace Explorer.Tours.Infrastructure.Migrations
                     b.ToTable("Tours", "tours");
                 });
 
+            modelBuilder.Entity("Explorer.Tours.Core.Domain.TourProblem", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("RejectedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("ReportedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("ResolvedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("ReviewRequestedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<long>("TourId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("TouristId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Status");
+
+                    b.HasIndex("TourId");
+
+                    b.HasIndex("TouristId");
+
+                    b.ToTable("TourProblems", "tours");
+                });
+
             modelBuilder.Entity("Explorer.Tours.Core.Domain.TourPurchase", b =>
                 {
                     b.Property<long>("Id")
@@ -228,12 +278,10 @@ namespace Explorer.Tours.Infrastructure.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<decimal>("BonusPointsUsed")
-                        .HasPrecision(10, 2)
-                        .HasColumnType("numeric(10,2)");
+                        .HasColumnType("numeric");
 
                     b.Property<decimal>("FinalAmount")
-                        .HasPrecision(10, 2)
-                        .HasColumnType("numeric(10,2)");
+                        .HasColumnType("numeric");
 
                     b.Property<DateTime>("PurchaseDate")
                         .HasColumnType("timestamp with time zone");
@@ -245,8 +293,7 @@ namespace Explorer.Tours.Infrastructure.Migrations
                         .HasColumnType("integer");
 
                     b.Property<decimal>("TotalAmount")
-                        .HasPrecision(10, 2)
-                        .HasColumnType("numeric(10,2)");
+                        .HasColumnType("numeric");
 
                     b.Property<string>("TourIds")
                         .IsRequired()
@@ -273,8 +320,7 @@ namespace Explorer.Tours.Infrastructure.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<string>("Comment")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("text");
 
                     b.Property<int>("Rating")
                         .HasColumnType("integer");
@@ -298,9 +344,6 @@ namespace Explorer.Tours.Infrastructure.Migrations
                     b.HasIndex("TourPurchaseId");
 
                     b.HasIndex("TouristId");
-
-                    b.HasIndex("TourPurchaseId", "TourId")
-                        .IsUnique();
 
                     b.ToTable("TourReviews", "tours");
                 });
