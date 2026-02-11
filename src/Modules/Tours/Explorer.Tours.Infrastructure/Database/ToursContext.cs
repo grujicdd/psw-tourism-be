@@ -18,6 +18,10 @@ public class ToursContext : DbContext
     public DbSet<BonusTransaction> BonusTransactions { get; set; }
     public DbSet<TourReview> TourReviews { get; set; }
 
+    // Tour Problem Report
+    public DbSet<TourProblem> TourProblems { get; set; }
+    public DbSet<TourReplacement> TourReplacements { get; set; }
+
     public ToursContext(DbContextOptions<ToursContext> options) : base(options) { }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -30,11 +34,40 @@ public class ToursContext : DbContext
         ConfigureBonusPoints(modelBuilder);
         ConfigureBonusTransaction(modelBuilder);
         ConfigureTourReview(modelBuilder);
+        ConfigureTourProblem(modelBuilder);
+        ConfigureTourReplacement(modelBuilder); // NEW!
     }
 
     private static void ConfigureTour(ModelBuilder modelBuilder)
     {
-        // Existing tour configuration - keeping it as is
+        modelBuilder.Entity<Tour>()
+            .HasKey(t => t.Id);
+
+        // Required fields
+        modelBuilder.Entity<Tour>()
+            .Property(t => t.Name)
+            .IsRequired();
+
+        modelBuilder.Entity<Tour>()
+            .Property(t => t.Description)
+            .IsRequired();
+
+        modelBuilder.Entity<Tour>()
+            .Property(t => t.AuthorId)
+            .IsRequired();
+
+        // Indexes for performance
+        modelBuilder.Entity<Tour>()
+            .HasIndex(t => t.AuthorId);
+
+        modelBuilder.Entity<Tour>()
+            .HasIndex(t => t.Date);
+
+        modelBuilder.Entity<Tour>()
+            .HasIndex(t => t.State);
+
+        modelBuilder.Entity<Tour>()
+            .HasIndex(t => t.Category);
     }
 
     private static void ConfigureShoppingCart(ModelBuilder modelBuilder)
@@ -158,5 +191,57 @@ public class ToursContext : DbContext
         modelBuilder.Entity<TourReview>()
             .Property(tr => tr.Comment)
             .HasMaxLength(1000);
+    }
+
+    private static void ConfigureTourProblem(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<TourProblem>()
+            .HasKey(tp => tp.Id);
+
+        // Required fields
+        modelBuilder.Entity<TourProblem>()
+            .Property(tp => tp.Title)
+            .IsRequired();
+
+        modelBuilder.Entity<TourProblem>()
+            .Property(tp => tp.Description)
+            .IsRequired();
+
+        // Indexes for performance
+        modelBuilder.Entity<TourProblem>()
+            .HasIndex(tp => tp.TourId);
+
+        modelBuilder.Entity<TourProblem>()
+            .HasIndex(tp => tp.TouristId);
+
+        modelBuilder.Entity<TourProblem>()
+            .HasIndex(tp => tp.Status);
+    }
+
+    private static void ConfigureTourReplacement(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<TourReplacement>()
+            .HasKey(tr => tr.Id);
+
+        // Indexes for performance and querying
+        modelBuilder.Entity<TourReplacement>()
+            .HasIndex(tr => tr.TourId);
+
+        modelBuilder.Entity<TourReplacement>()
+            .HasIndex(tr => tr.OriginalGuideId);
+
+        modelBuilder.Entity<TourReplacement>()
+            .HasIndex(tr => tr.ReplacementGuideId);
+
+        modelBuilder.Entity<TourReplacement>()
+            .HasIndex(tr => tr.Status);
+
+        // For queries like "get pending replacements for specific tour"
+        modelBuilder.Entity<TourReplacement>()
+            .HasIndex(tr => new { tr.TourId, tr.Status });
+
+        // For queries like "get all pending replacements by guide"
+        modelBuilder.Entity<TourReplacement>()
+            .HasIndex(tr => new { tr.OriginalGuideId, tr.Status });
     }
 }

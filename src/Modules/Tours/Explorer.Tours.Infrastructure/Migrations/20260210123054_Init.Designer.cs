@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Explorer.Tours.Infrastructure.Migrations
 {
     [DbContext(typeof(ToursContext))]
-    [Migration("20260207165301_Init")]
+    [Migration("20260210123054_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -191,6 +191,9 @@ namespace Explorer.Tours.Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
+                    b.Property<long>("AuthorId")
+                        .HasColumnType("bigint");
+
                     b.Property<int>("Category")
                         .HasColumnType("integer");
 
@@ -216,7 +219,63 @@ namespace Explorer.Tours.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AuthorId");
+
+                    b.HasIndex("Category");
+
+                    b.HasIndex("Date");
+
+                    b.HasIndex("State");
+
                     b.ToTable("Tours", "tours");
+                });
+
+            modelBuilder.Entity("Explorer.Tours.Core.Domain.TourProblem", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("RejectedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("ReportedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("ResolvedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("ReviewRequestedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<long>("TourId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("TouristId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Status");
+
+                    b.HasIndex("TourId");
+
+                    b.HasIndex("TouristId");
+
+                    b.ToTable("TourProblems", "tours");
                 });
 
             modelBuilder.Entity("Explorer.Tours.Core.Domain.TourPurchase", b =>
@@ -262,6 +321,52 @@ namespace Explorer.Tours.Infrastructure.Migrations
                     b.HasIndex("TouristId");
 
                     b.ToTable("TourPurchases", "tours");
+                });
+
+            modelBuilder.Entity("Explorer.Tours.Core.Domain.TourReplacement", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime?>("AcceptedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("CancelledAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long>("OriginalGuideId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("ReplacementGuideId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("RequestedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<long>("TourId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OriginalGuideId");
+
+                    b.HasIndex("ReplacementGuideId");
+
+                    b.HasIndex("Status");
+
+                    b.HasIndex("TourId");
+
+                    b.HasIndex("OriginalGuideId", "Status");
+
+                    b.HasIndex("TourId", "Status");
+
+                    b.ToTable("TourReplacements", "tours");
                 });
 
             modelBuilder.Entity("Explorer.Tours.Core.Domain.TourReview", b =>

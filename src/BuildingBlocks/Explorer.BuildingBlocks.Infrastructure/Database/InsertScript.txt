@@ -48,19 +48,19 @@ INSERT INTO tours."Equipment"("Id", "Name", "Description") VALUES
 (5, 'Weather Protection', 'Light rain jacket or umbrella depending on season.'),
 (6, 'Camera', 'Capture memories of beautiful locations and experiences.');
 
-INSERT INTO tours."Tours"("Id", "Name", "Description", "Difficulty", "Category", "Price", "Date", "State") VALUES 
-(1, 'Belgrade Old Town Walking Tour', 'Explore the historic heart of Belgrade including Kalemegdan Fortress, Knez Mihailova Street, and traditional kafanas. Perfect introduction to Serbian capital.', 1, 2, 25, '2024-12-20 10:00:00+01:00', 1),
-(2, 'Novi Sad Food & Culture Experience', 'Discover the culinary delights of Vojvodina while exploring Novi Sad''s charming Petrovaradin Fortress and historic city center.', 1, 5, 35, '2024-12-22 11:00:00+01:00', 1),
-(3, 'Tara National Park Adventure', 'Challenging hike through pristine wilderness, including Drina River viewpoints and traditional mountain villages. For experienced hikers only.', 4, 1, 55, '2024-12-25 08:00:00+01:00', 1),
-(4, 'Kopaonik Ski & Nature Tour', 'Winter sports adventure combined with mountain wildlife observation. Equipment provided.', 3, 3, 75, '2025-01-10 09:00:00+01:00', 1),
-(5, 'Serbian Monastery Heritage Trail', 'Visit medieval monasteries including Studenica and Žiča. Deep dive into Serbian Orthodox spirituality and Byzantine art.', 2, 2, 45, '2026-01-15 09:30:00+01:00', 1),
-(6, 'Danube Delta Boat Excursion', 'Peaceful boat tour through Europe''s second largest river delta. Birdwatching and fishing opportunities included.', 1, 1, 40, '2026-01-20 08:00:00+01:00', 1),
-(7, 'Belgrade Nightlife & Entertainment', 'Experience Belgrade''s famous nightlife including floating river clubs, traditional live music venues, and rooftop bars.', 1, 4, 30, '2026-01-25 20:00:00+01:00', 1),
-(8, 'Zlatibor Mountain Retreat', 'Relaxing weekend in mountain air with traditional Serbian breakfast, nature walks, and local craft workshops.', 2, 1, 60, '2026-02-01 10:00:00+01:00', 1),
-(9, 'Novi Pazar Historical Walk', 'Explore the multicultural heritage of Novi Pazar including Ottoman architecture, medieval churches, and traditional crafts.', 2, 2, 30, '2026-01-08 10:00:00+01:00', 1),
-(10, 'Šumadija Wine & Nature Tour', 'Visit local wineries and enjoy scenic countryside views in the heart of Serbia.', 1, 5, 40, '2026-01-11 11:00:00+01:00', 1),
-(100, 'Niš Archaeological Discovery', 'Explore ancient Roman ruins including Constantine''s birthplace. Still planning the route and securing permissions.', 2, 2, 35, '2025-02-15 10:00:00+01:00', 0),
-(101, 'Vojvodina Wine Tasting Tour', 'Visit local wineries in Srem region. Working with vintners to finalize tasting schedule.', 1, 5, 50, '2025-02-20 11:00:00+01:00', 0);
+INSERT INTO tours."Tours"("Id", "AuthorId", "Name", "Description", "Difficulty", "Category", "Price", "Date", "State") VALUES 
+(1, 10, 'Belgrade Old Town Walking Tour', 'Explore the historic heart of Belgrade including Kalemegdan Fortress, Knez Mihailova Street, and traditional kafanas. Perfect introduction to Serbian capital.', 1, 2, 25, '2024-12-20 10:00:00+01:00', 1),
+(2, 10, 'Novi Sad Food & Culture Experience', 'Discover the culinary delights of Vojvodina while exploring Novi Sad''s charming Petrovaradin Fortress and historic city center.', 1, 5, 35, '2024-12-22 11:00:00+01:00', 1),
+(3, 11, 'Tara National Park Adventure', 'Challenging hike through pristine wilderness, including Drina River viewpoints and traditional mountain villages. For experienced hikers only.', 4, 1, 55, '2024-12-25 08:00:00+01:00', 1),
+(4, 11, 'Kopaonik Ski & Nature Tour', 'Winter sports adventure combined with mountain wildlife observation. Equipment provided.', 3, 3, 75, '2025-01-10 09:00:00+01:00', 1),
+(5, 12, 'Serbian Monastery Heritage Trail', 'Visit medieval monasteries including Studenica and Žiča. Deep dive into Serbian Orthodox spirituality and Byzantine art.', 2, 2, 45, '2026-01-15 09:30:00+01:00', 1),
+(6, 12, 'Danube Delta Boat Excursion', 'Peaceful boat tour through Europe''s second largest river delta. Birdwatching and fishing opportunities included.', 1, 1, 40, '2026-01-20 08:00:00+01:00', 1),
+(7, 13, 'Belgrade Nightlife & Entertainment', 'Experience Belgrade''s famous nightlife including floating river clubs, traditional live music venues, and rooftop bars.', 1, 4, 30, '2026-01-25 20:00:00+01:00', 1),
+(8, 13, 'Zlatibor Mountain Retreat', 'Relaxing weekend in mountain air with traditional Serbian breakfast, nature walks, and local craft workshops.', 2, 1, 60, '2026-02-01 10:00:00+01:00', 1),
+(9, 10, 'Novi Pazar Historical Walk', 'Explore the multicultural heritage of Novi Pazar including Ottoman architecture, medieval churches, and traditional crafts.', 2, 2, 30, '2026-01-08 10:00:00+01:00', 1),
+(10, 10, 'Šumadija Wine & Nature Tour', 'Visit local wineries and enjoy scenic countryside views in the heart of Serbia.', 1, 5, 40, '2026-01-11 11:00:00+01:00', 1),
+(100, 11, 'Niš Archaeological Discovery', 'Explore ancient Roman ruins including Constantine''s birthplace. Still planning the route and securing permissions.', 2, 2, 35, '2025-02-15 10:00:00+01:00', 0),
+(101, 11, 'Vojvodina Wine Tasting Tour', 'Visit local wineries in Srem region. Working with vintners to finalize tasting schedule.', 1, 5, 50, '2025-02-20 11:00:00+01:00', 0);
 
 INSERT INTO tours."KeyPoints"("Id", "TourId", "Name", "Description", "Latitude", "Longitude", "ImageUrl", "Order") VALUES 
 (1, 1, 'Kalemegdan Fortress', 'Historic fortress overlooking Danube and Sava rivers confluence', 44.8225, 20.4516, null, 1),

@@ -105,6 +105,28 @@ namespace Explorer.Tours.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "TourProblems",
+                schema: "tours",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    TourId = table.Column<long>(type: "bigint", nullable: false),
+                    TouristId = table.Column<long>(type: "bigint", nullable: false),
+                    Title = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: false),
+                    Status = table.Column<int>(type: "integer", nullable: false),
+                    ReportedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    ResolvedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    ReviewRequestedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    RejectedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TourProblems", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "TourPurchases",
                 schema: "tours",
                 columns: table => new
@@ -123,6 +145,26 @@ namespace Explorer.Tours.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_TourPurchases", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TourReplacements",
+                schema: "tours",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    TourId = table.Column<long>(type: "bigint", nullable: false),
+                    OriginalGuideId = table.Column<long>(type: "bigint", nullable: false),
+                    ReplacementGuideId = table.Column<long>(type: "bigint", nullable: true),
+                    Status = table.Column<int>(type: "integer", nullable: false),
+                    RequestedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    AcceptedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    CancelledAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TourReplacements", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -151,6 +193,7 @@ namespace Explorer.Tours.Infrastructure.Migrations
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    AuthorId = table.Column<long>(type: "bigint", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: false),
                     Difficulty = table.Column<int>(type: "integer", nullable: false),
@@ -197,6 +240,24 @@ namespace Explorer.Tours.Infrastructure.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_TourProblems_Status",
+                schema: "tours",
+                table: "TourProblems",
+                column: "Status");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TourProblems_TourId",
+                schema: "tours",
+                table: "TourProblems",
+                column: "TourId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TourProblems_TouristId",
+                schema: "tours",
+                table: "TourProblems",
+                column: "TouristId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_TourPurchases_PurchaseDate",
                 schema: "tours",
                 table: "TourPurchases",
@@ -207,6 +268,42 @@ namespace Explorer.Tours.Infrastructure.Migrations
                 schema: "tours",
                 table: "TourPurchases",
                 column: "TouristId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TourReplacements_OriginalGuideId",
+                schema: "tours",
+                table: "TourReplacements",
+                column: "OriginalGuideId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TourReplacements_OriginalGuideId_Status",
+                schema: "tours",
+                table: "TourReplacements",
+                columns: new[] { "OriginalGuideId", "Status" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TourReplacements_ReplacementGuideId",
+                schema: "tours",
+                table: "TourReplacements",
+                column: "ReplacementGuideId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TourReplacements_Status",
+                schema: "tours",
+                table: "TourReplacements",
+                column: "Status");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TourReplacements_TourId",
+                schema: "tours",
+                table: "TourReplacements",
+                column: "TourId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TourReplacements_TourId_Status",
+                schema: "tours",
+                table: "TourReplacements",
+                columns: new[] { "TourId", "Status" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_TourReviews_TourId",
@@ -232,6 +329,30 @@ namespace Explorer.Tours.Infrastructure.Migrations
                 table: "TourReviews",
                 columns: new[] { "TourPurchaseId", "TourId" },
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tours_AuthorId",
+                schema: "tours",
+                table: "Tours",
+                column: "AuthorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tours_Category",
+                schema: "tours",
+                table: "Tours",
+                column: "Category");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tours_Date",
+                schema: "tours",
+                table: "Tours",
+                column: "Date");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tours_State",
+                schema: "tours",
+                table: "Tours",
+                column: "State");
         }
 
         /// <inheritdoc />
@@ -258,7 +379,15 @@ namespace Explorer.Tours.Infrastructure.Migrations
                 schema: "tours");
 
             migrationBuilder.DropTable(
+                name: "TourProblems",
+                schema: "tours");
+
+            migrationBuilder.DropTable(
                 name: "TourPurchases",
+                schema: "tours");
+
+            migrationBuilder.DropTable(
+                name: "TourReplacements",
                 schema: "tours");
 
             migrationBuilder.DropTable(

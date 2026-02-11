@@ -16,5 +16,6 @@ namespace Explorer.Tours.API.Dtos
         public int Price { get; set; }
         public DateTime Date { get; set; }
         public int State { get; set; }
+        public long AuthorId { get; set; }
     }
 }
