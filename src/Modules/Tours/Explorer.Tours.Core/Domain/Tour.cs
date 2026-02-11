@@ -4,7 +4,7 @@ namespace Explorer.Tours.Core.Domain;
 
 public class Tour : Entity
 {
-    public long AuthorId { get; private set; }  // Guide/Author who created the tour
+    public long AuthorId { get; set; }  // Guide/Author who created the tour
     public string Name { get; set; }
     public string Description { get; set; }
     public int Difficulty { get; set; }

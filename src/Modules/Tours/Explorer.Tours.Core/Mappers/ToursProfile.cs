@@ -43,5 +43,18 @@ public class ToursProfile : Profile
         CreateMap<TourReviewCreateDto, TourReview>()
             .ForMember(dest => dest.TouristId, opt => opt.Ignore())
             .ForMember(dest => dest.ReviewDate, opt => opt.Ignore());
+
+        CreateMap<TourReplacementDto, TourReplacement>()
+        .ForMember(dest => dest.Status, opt => opt.MapFrom(src => (Domain.TourReplacementStatus)src.Status))
+        .ReverseMap()
+        .ForMember(dest => dest.Status, opt => opt.MapFrom(src => (API.Dtos.TourReplacementStatus)src.Status));
+
+            CreateMap<TourReplacementCreateDto, TourReplacement>()
+                .ForMember(dest => dest.OriginalGuideId, opt => opt.Ignore())
+                .ForMember(dest => dest.Status, opt => opt.Ignore())
+                .ForMember(dest => dest.RequestedAt, opt => opt.Ignore())
+                .ForMember(dest => dest.ReplacementGuideId, opt => opt.Ignore())
+                .ForMember(dest => dest.AcceptedAt, opt => opt.Ignore())
+                .ForMember(dest => dest.CancelledAt, opt => opt.Ignore());
     }
 }

@@ -1,19 +1,21 @@
 // src/Modules/Tours/Explorer.Tours.Infrastructure/ToursStartup.cs
 using Explorer.BuildingBlocks.Core.UseCases;
 using Explorer.BuildingBlocks.Infrastructure.Database;
+using Explorer.Tours.API.Public;
 using Explorer.Tours.API.Public.Administration;
-using Explorer.Tours.API.Public.Tourist;
 using Explorer.Tours.API.Public.Internal;
+using Explorer.Tours.API.Public.Tourist;
+using Explorer.Tours.Core.Configuration;
 using Explorer.Tours.Core.Domain;
 using Explorer.Tours.Core.Mappers;
 using Explorer.Tours.Core.UseCases.Administration;
-using Explorer.Tours.Core.UseCases.Tourist;
+using Explorer.Tours.Core.UseCases.Guide;
 using Explorer.Tours.Core.UseCases.Internal;
-using Explorer.Tours.Core.Configuration;
+using Explorer.Tours.Core.UseCases.Tourist;
 using Explorer.Tours.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Explorer.Tours.Infrastructure;
 
@@ -52,6 +54,8 @@ public static class ToursStartup
 
         // Tour problem service
         services.AddScoped<ITourProblemService, TourProblemService>();
+        //Tour Replacement
+        services.AddScoped<ITourReplacementService, TourReplacementService>();
     }
 
     private static void SetupInfrastructure(IServiceCollection services)
@@ -72,6 +76,7 @@ public static class ToursStartup
 
         // Tour problem repository
         services.AddScoped(typeof(ICrudRepository<TourProblem>), typeof(CrudDatabaseRepository<TourProblem, ToursContext>));
+        services.AddScoped(typeof(ICrudRepository<TourReplacement>), typeof(CrudDatabaseRepository<TourReplacement, ToursContext>));
 
         services.AddDbContext<ToursContext>(opt =>
             opt.UseNpgsql(DbConnectionStringBuilder.Build("tours"),
