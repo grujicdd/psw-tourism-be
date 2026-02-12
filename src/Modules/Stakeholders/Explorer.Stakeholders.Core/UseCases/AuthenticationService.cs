@@ -92,7 +92,14 @@ public class AuthenticationService : IAuthenticationService
 
         try
         {
-            var user = _userRepository.Create(new User(account.Username, account.Password, UserRole.Tourist, true));
+            // Pass receiveRecommendations from registration DTO to User constructor
+            var user = _userRepository.Create(new User(
+                account.Username,
+                account.Password,
+                UserRole.Tourist,
+                true,
+                account.ReceiveRecommendations)); // <-- ADDED: Pass the preference from registration
+
             var person = _personRepository.Create(new Person(user.Id, account.Name, account.Surname, account.Email));
 
             // Create UserInterest records if interests are provided

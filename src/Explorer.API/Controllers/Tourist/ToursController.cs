@@ -22,9 +22,12 @@ namespace Explorer.API.Controllers.Tourist
         }
 
         [HttpGet]
-        public ActionResult<PagedResult<TourDto>> GetPublishedTours([FromQuery] int page, [FromQuery] int pageSize)
+        public ActionResult<PagedResult<TourDto>> GetPublishedTours(
+            [FromQuery] int page,
+            [FromQuery] int pageSize,
+            [FromQuery] string? sortByDate = null)  // ADDED: sortByDate parameter
         {
-            var result = _tourService.GetPublishedTours(page, pageSize);
+            var result = _tourService.GetPublishedTours(page, pageSize, sortByDate);
             return CreateResponse(result);
         }
 
@@ -41,9 +44,10 @@ namespace Explorer.API.Controllers.Tourist
             [FromQuery] int pageSize,
             [FromQuery] int? category,
             [FromQuery] int? difficulty,
-            [FromQuery] decimal? maxPrice)
+            [FromQuery] decimal? maxPrice,
+            [FromQuery] string? sortByDate = null)  // ADDED: sortByDate parameter
         {
-            var result = _tourService.GetFilteredTours(page, pageSize, category, difficulty, maxPrice);
+            var result = _tourService.GetFilteredTours(page, pageSize, category, difficulty, maxPrice, sortByDate);
             return CreateResponse(result);
         }
 

@@ -19,16 +19,22 @@ namespace Explorer.Tours.Core.UseCases.Tourist
             _mapper = mapper;
         }
 
-        public Result<PagedResult<TourDto>> GetPublishedTours(int page, int pageSize)
+        public Result<PagedResult<TourDto>> GetPublishedTours(int page, int pageSize, string? sortByDate = null)
         {
             try
             {
-                // Get all published tours
-                var allPublishedTours = _tourRepository.GetAll().Where(t => t.State == TourState.COMPLETE).ToList();
-                var totalCount = allPublishedTours.Count;
+                // Get all published tours as a list
+                var allPublishedTours = _tourRepository.GetAll()
+                    .Where(t => t.State == TourState.COMPLETE)
+                    .ToList();
+
+                // Apply sorting
+                var sortedTours = ApplySorting(allPublishedTours, sortByDate);
+
+                var totalCount = sortedTours.Count;
 
                 // Apply pagination
-                var pagedTours = allPublishedTours.Skip(page * pageSize).Take(pageSize).ToList();
+                var pagedTours = sortedTours.Skip(page * pageSize).Take(pageSize).ToList();
 
                 // Map to DTOs
                 var tourDtos = _mapper.Map<List<TourDto>>(pagedTours);
@@ -64,33 +70,38 @@ namespace Explorer.Tours.Core.UseCases.Tourist
             }
         }
 
-        public Result<PagedResult<TourDto>> GetFilteredTours(int page, int pageSize, int? category, int? difficulty, decimal? maxPrice)
+        public Result<PagedResult<TourDto>> GetFilteredTours(int page, int pageSize, int? category, int? difficulty, decimal? maxPrice, string? sortByDate = null)
         {
             try
             {
-                var allTours = _tourRepository.GetAll().Where(t => t.State == TourState.COMPLETE);
+                // Get all tours as a list and apply filters
+                var allTours = _tourRepository.GetAll()
+                    .Where(t => t.State == TourState.COMPLETE)
+                    .ToList();
 
                 // Apply filters
                 if (category.HasValue)
                 {
-                    allTours = allTours.Where(t => t.Category == category.Value);
+                    allTours = allTours.Where(t => t.Category == category.Value).ToList();
                 }
 
                 if (difficulty.HasValue)
                 {
-                    allTours = allTours.Where(t => t.Difficulty == difficulty.Value);
+                    allTours = allTours.Where(t => t.Difficulty == difficulty.Value).ToList();
                 }
 
                 if (maxPrice.HasValue && maxPrice.Value > 0)
                 {
-                    allTours = allTours.Where(t => t.Price <= (int)maxPrice.Value);
+                    allTours = allTours.Where(t => t.Price <= (int)maxPrice.Value).ToList();
                 }
 
-                var filteredTours = allTours.ToList();
-                var totalCount = filteredTours.Count;
+                // Apply sorting
+                var sortedTours = ApplySorting(allTours, sortByDate);
+
+                var totalCount = sortedTours.Count;
 
                 // Apply pagination
-                var pagedTours = filteredTours.Skip(page * pageSize).Take(pageSize).ToList();
+                var pagedTours = sortedTours.Skip(page * pageSize).Take(pageSize).ToList();
 
                 // Map to DTOs
                 var tourDtos = _mapper.Map<List<TourDto>>(pagedTours);
@@ -124,6 +135,22 @@ namespace Explorer.Tours.Core.UseCases.Tourist
             {
                 return Result.Fail($"Error retrieving categories: {ex.Message}");
             }
+        }
+
+        // UPDATED: Helper method to apply date sorting on List<Tour>
+        private List<Tour> ApplySorting(List<Tour> tours, string? sortByDate)
+        {
+            if (string.IsNullOrWhiteSpace(sortByDate))
+            {
+                return tours; // No sorting, return as is
+            }
+
+            return sortByDate.ToLower() switch
+            {
+                "asc" => tours.OrderBy(t => t.Date).ToList(),
+                "desc" => tours.OrderByDescending(t => t.Date).ToList(),
+                _ => tours // Invalid sort value, return as is
+            };
         }
     }
 }
