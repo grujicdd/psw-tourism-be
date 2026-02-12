@@ -7,5 +7,6 @@ public class AccountRegistrationDto
     public string Email { get; set; }
     public string Name { get; set; }
     public string Surname { get; set; }
-    public int[] InterestsIds {  get; set; }
+    public int[] InterestsIds { get; set; }
+    public bool ReceiveRecommendations { get; set; } = true;
 }
