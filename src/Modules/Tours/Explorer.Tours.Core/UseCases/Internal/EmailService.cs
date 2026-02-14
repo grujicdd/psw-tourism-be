@@ -294,6 +294,27 @@ The Explorer Team
             }
         }
 
+        public async Task<Result> SendPurchaseConfirmationWithEmailAsync(string email, PurchaseEmailData purchaseData)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(email))
+                {
+                    return Result.Fail("Email address is required");
+                }
+
+                var subject = "Purchase Confirmation - Your Tour Booking";
+                var emailContent = GeneratePurchaseConfirmationEmail(email, purchaseData);
+
+                return await SendEmailAsync(email, subject, emailContent);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error sending purchase confirmation email to {Email}", email);
+                return Result.Fail($"Error sending email: {ex.Message}");
+            }
+        }
+
         private string GenerateTourRecommendationEmail(string email, TourRecommendationEmailData data)
         {
             return $@"

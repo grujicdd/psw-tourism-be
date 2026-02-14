@@ -20,14 +20,13 @@ namespace Explorer.Tours.Core.Domain
 
         private void Validate()
         {
-            if (TouristId <= 0)
-                throw new ArgumentException("Tourist ID must be positive");
+
         }
 
         public void AddTour(long tourId)
         {
-            if (tourId <= 0)
-                throw new ArgumentException("Tour ID must be positive");
+            //if (tourId <= 0)
+            //    throw new ArgumentException("Tour ID must be positive");
 
             if (!TourIds.Contains(tourId))
             {

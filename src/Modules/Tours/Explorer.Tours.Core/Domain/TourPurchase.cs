@@ -28,8 +28,8 @@ namespace Explorer.Tours.Core.Domain
 
         private void Validate()
         {
-            if (TouristId <= 0)
-                throw new ArgumentException("Tourist ID must be positive");
+            //if (TouristId <= 0)
+            //   throw new ArgumentException("Tourist ID must be positive");
 
             if (TourIds == null || TourIds.Count == 0)
                 throw new ArgumentException("Tour IDs cannot be empty");
