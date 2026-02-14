@@ -11,7 +11,7 @@ namespace Explorer.API.BackgroundServices
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly ILogger<TourReplacementBackgroundService> _logger;
-        private readonly TimeSpan _checkInterval = TimeSpan.FromMinutes(15); // Check every 15 minutes
+        private readonly TimeSpan _checkInterval = TimeSpan.FromMinutes(2); // Check every 2 minutes
 
         public TourReplacementBackgroundService(
             IServiceProvider serviceProvider,

@@ -92,30 +92,33 @@ public class AuthenticationService : IAuthenticationService
 
         try
         {
-            // Pass receiveRecommendations from registration DTO to User constructor
-            var user = _userRepository.Create(new User(
-                account.Username,
-                account.Password,
-                UserRole.Tourist,
-                true,
-                account.ReceiveRecommendations)); // <-- ADDED: Pass the preference from registration
+            var user = _userRepository.Create(new User(account.Username, account.Password, UserRole.Tourist, true));
 
-            var person = _personRepository.Create(new Person(user.Id, account.Name, account.Surname, account.Email));
-
-            // Create UserInterest records if interests are provided
-            if (account.InterestsIds != null && account.InterestsIds.Any())
+            try
             {
-                foreach (int interestId in account.InterestsIds)
-                {
-                    _userInterestRepository.Create(new UserInterest(person.UserId, interestId));
-                }
-            }
+                var person = _personRepository.Create(new Person(user.Id, account.Name, account.Surname, account.Email));
 
-            return _tokenGenerator.GenerateAccessToken(user, person.Id);
+                // Create UserInterest records if interests are provided
+                if (account.InterestsIds != null && account.InterestsIds.Any())
+                {
+                    foreach (int interestId in account.InterestsIds)
+                    {
+                        _userInterestRepository.Create(new UserInterest(person.UserId, interestId));
+                    }
+                }
+
+                return _tokenGenerator.GenerateAccessToken(user, person.Id);
+            }
+            catch (Exception)
+            {
+                // If person creation or interests fail, delete the user that was created
+                _userRepository.Delete(account.Username);
+                throw;
+            }
         }
         catch (ArgumentException e)
         {
-            _userRepository.Delete(account.Username);
+            // User creation failed due to validation - nothing to delete
             return Result.Fail(FailureCode.InvalidArgument).WithError(e.Message);
         }
     }

@@ -4,7 +4,7 @@ namespace Explorer.Tours.Core.Domain;
 
 public class Tour : Entity
 {
-    public long AuthorId { get; set; }  // Guide/Author who created the tour
+    public long AuthorId { get; set; }
     public string Name { get; set; }
     public string Description { get; set; }
     public int Difficulty { get; set; }
@@ -24,6 +24,7 @@ public class Tour : Entity
         Price = price;
         Date = date;
         State = state;
+        Validate();
     }
 
     // Keep old constructor for backward compatibility (can be removed later)
@@ -37,6 +38,28 @@ public class Tour : Entity
         Price = price;
         Date = date;
         State = state;
+        Validate();
+    }
+
+    private void Validate()
+    {
+        if (string.IsNullOrWhiteSpace(Name))
+            throw new ArgumentException("Tour name is required");
+
+        if (string.IsNullOrWhiteSpace(Description))
+            throw new ArgumentException("Tour description is required");
+
+        if (Difficulty < 1 || Difficulty > 5)
+            throw new ArgumentException("Difficulty must be between 1 and 5");
+
+        if (Category < 1 || Category > 5)
+            throw new ArgumentException("Category must be between 1 and 5");
+
+        if (Price < 0)
+            throw new ArgumentException("Price cannot be negative");
+
+        //if (Date < DateTime.UtcNow)
+        //    throw new ArgumentException("Tour date cannot be in the past");
     }
 }
 

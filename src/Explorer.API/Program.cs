@@ -12,6 +12,7 @@ builder.Services.ConfigureAuth();
 builder.Services.RegisterModules(builder.Configuration);  // Pass configuration here
 
 builder.Services.AddHostedService<TourReminderBackgroundService>();
+builder.Services.AddHostedService<TourReplacementBackgroundService>();
 
 var app = builder.Build();
 

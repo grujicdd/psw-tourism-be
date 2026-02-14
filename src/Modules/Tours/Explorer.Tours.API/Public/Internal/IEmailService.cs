@@ -6,6 +6,7 @@ namespace Explorer.Tours.API.Public.Internal
     public interface IEmailService
     {
         Task<Result> SendPurchaseConfirmationAsync(long touristId, PurchaseEmailData purchaseData);
+        Task<Result> SendPurchaseConfirmationWithEmailAsync(string email, PurchaseEmailData purchaseData); // ADD THIS
         Task<Result> SendTourCancellationAsync(List<long> touristIds, TourCancellationEmailData cancellationData);
         Task<Result> SendTourReminderAsync(long touristId, TourReminderEmailData reminderData);
         Task<Result> SendTourRecommendationAsync(long tourId, TourRecommendationEmailData tourData);

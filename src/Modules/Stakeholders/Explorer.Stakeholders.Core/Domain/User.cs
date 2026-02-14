@@ -26,8 +26,9 @@ public class User : Entity
 
     public void Validate()
     {
-        if (string.IsNullOrWhiteSpace(Username)) throw new ArgumentException("Invalid Name");
-        if (string.IsNullOrWhiteSpace(Password)) throw new ArgumentException("Invalid Surname");
+        if (string.IsNullOrWhiteSpace(Username)) throw new ArgumentException("Invalid Username");
+        if (string.IsNullOrWhiteSpace(Password)) throw new ArgumentException("Invalid Password");
+        if (Password.Length < 3) throw new ArgumentException("Password must be at least 3 characters long");
     }
 
     public void UpdateRecommendationPreference(bool receiveRecommendations)

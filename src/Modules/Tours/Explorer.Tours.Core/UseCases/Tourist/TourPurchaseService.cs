@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Explorer.BuildingBlocks.Core.UseCases;
+using Explorer.Stakeholders.Core.Domain;
 using Explorer.Tours.API.Dtos;
 using Explorer.Tours.API.Public.Tourist;
 using Explorer.Tours.API.Public.Internal;
@@ -12,6 +13,7 @@ namespace Explorer.Tours.Core.UseCases.Tourist
     {
         private readonly ICrudRepository<TourPurchase> _purchaseRepository;
         private readonly ICrudRepository<Tour> _tourRepository;
+        private readonly ICrudRepository<Person> _personRepository;
         private readonly IShoppingCartService _cartService;
         private readonly IBonusPointsService _bonusPointsService;
         private readonly IEmailService _emailService;
@@ -20,6 +22,7 @@ namespace Explorer.Tours.Core.UseCases.Tourist
         public TourPurchaseService(
             ICrudRepository<TourPurchase> purchaseRepository,
             ICrudRepository<Tour> tourRepository,
+            ICrudRepository<Person> personRepository,
             IShoppingCartService cartService,
             IBonusPointsService bonusPointsService,
             IEmailService emailService,
@@ -27,6 +30,7 @@ namespace Explorer.Tours.Core.UseCases.Tourist
         {
             _purchaseRepository = purchaseRepository;
             _tourRepository = tourRepository;
+            _personRepository = personRepository;
             _cartService = cartService;
             _bonusPointsService = bonusPointsService;
             _emailService = emailService;
@@ -82,37 +86,40 @@ namespace Explorer.Tours.Core.UseCases.Tourist
                     var bonusPointsResult = _bonusPointsService.GetBonusPoints(touristId);
                     if (bonusPointsResult.IsFailed)
                     {
-                        return Result.Fail("Failed to retrieve bonus points").WithErrors(bonusPointsResult.Errors);
+                        return Result.Fail("Failed to validate bonus points").WithErrors(bonusPointsResult.Errors);
                     }
 
-                    if (bonusPointsToUse > bonusPointsResult.Value.AvailablePoints)
+                    var availablePoints = bonusPointsResult.Value.AvailablePoints;
+                    if (bonusPointsToUse > availablePoints)
                     {
-                        return Result.Fail(FailureCode.InvalidArgument).WithError("Insufficient bonus points");
+                        return Result.Fail(FailureCode.InvalidArgument)
+                            .WithError($"Insufficient bonus points. Available: {availablePoints}, Requested: {bonusPointsToUse}");
                     }
 
                     if (bonusPointsToUse > totalAmount)
                     {
-                        return Result.Fail(FailureCode.InvalidArgument).WithError("Bonus points cannot exceed total amount");
+                        return Result.Fail(FailureCode.InvalidArgument)
+                            .WithError($"Bonus points cannot exceed total amount. Total: €{totalAmount}, Bonus: {bonusPointsToUse}");
                     }
                 }
 
                 // Create purchase
-                var purchase = new TourPurchase(touristId, cart.TourIds, totalAmount, bonusPointsToUse);
+                var purchase = new TourPurchase(
+                    touristId,
+                    cart.TourIds,
+                    totalAmount,
+                    bonusPointsToUse
+                );
+
                 var createdPurchase = _purchaseRepository.Create(purchase);
 
                 // Use bonus points if specified
                 if (bonusPointsToUse > 0)
                 {
-                    var useBonusResult = _bonusPointsService.UseBonusPoints(
-                        touristId,
-                        bonusPointsToUse,
-                        $"Purchase #{createdPurchase.Id}",
-                        createdPurchase.Id);
-
+                    var useBonusResult = _bonusPointsService.UseBonusPoints(touristId, bonusPointsToUse, "Tour Purchase");
                     if (useBonusResult.IsFailed)
                     {
-                        // TODO: Consider rolling back the purchase in a real transaction
-                        return Result.Fail("Failed to use bonus points").WithErrors(useBonusResult.Errors);
+                        return Result.Fail("Purchase created but failed to deduct bonus points").WithErrors(useBonusResult.Errors);
                     }
                 }
 
@@ -124,28 +131,45 @@ namespace Explorer.Tours.Core.UseCases.Tourist
                     Console.WriteLine($"Warning: Failed to clear cart for tourist {touristId}");
                 }
 
-                // Send purchase confirmation email (don't fail purchase if email fails)
-                _ = Task.Run(async () =>
+                // CRITICAL: Get tourist email SYNCHRONOUSLY while DbContext is alive
+                string? touristEmail = null;
+                try
                 {
-                    try
-                    {
-                        var emailData = new PurchaseEmailData
-                        {
-                            PurchaseId = createdPurchase.Id,
-                            TourNames = tours.Select(t => t.Name).ToList(),
-                            TotalAmount = totalAmount,
-                            BonusPointsUsed = bonusPointsToUse,
-                            FinalAmount = createdPurchase.FinalAmount,
-                            PurchaseDate = createdPurchase.PurchaseDate
-                        };
+                    var person = _personRepository.Get(touristId);
+                    touristEmail = person?.Email;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Warning: Could not retrieve tourist email: {ex.Message}");
+                }
 
-                        await _emailService.SendPurchaseConfirmationAsync(touristId, emailData);
-                    }
-                    catch (Exception ex)
+                // Send purchase confirmation email (don't fail purchase if email fails)
+                if (!string.IsNullOrEmpty(touristEmail))
+                {
+                    var emailCopy = touristEmail; // Capture for Task.Run closure
+
+                    _ = Task.Run(async () =>
                     {
-                        Console.WriteLine($"Failed to send purchase confirmation email: {ex.Message}");
-                    }
-                });
+                        try
+                        {
+                            var emailData = new PurchaseEmailData
+                            {
+                                PurchaseId = createdPurchase.Id,
+                                TourNames = tours.Select(t => t.Name).ToList(),
+                                TotalAmount = totalAmount,
+                                BonusPointsUsed = bonusPointsToUse,
+                                FinalAmount = createdPurchase.FinalAmount,
+                                PurchaseDate = createdPurchase.PurchaseDate
+                            };
+
+                            await _emailService.SendPurchaseConfirmationWithEmailAsync(emailCopy, emailData);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Failed to send purchase confirmation email: {ex.Message}");
+                        }
+                    });
+                }
 
                 Console.WriteLine($"Purchase completed for tourist {touristId}. Purchase ID: {createdPurchase.Id}");
 

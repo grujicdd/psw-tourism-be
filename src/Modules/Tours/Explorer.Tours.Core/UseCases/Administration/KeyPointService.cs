@@ -52,6 +52,10 @@ namespace Explorer.Tours.Core.UseCases.Administration
                 var createdKeyPoint = _keyPointRepository.Create(keyPoint);
                 return Result.Ok(_mapper.Map<KeyPointDto>(createdKeyPoint));
             }
+            catch (KeyNotFoundException)
+            {
+                return Result.Fail(FailureCode.NotFound).WithError("Tour not found");
+            }
             catch (ArgumentException ex)
             {
                 return Result.Fail(FailureCode.InvalidArgument).WithError(ex.Message);
