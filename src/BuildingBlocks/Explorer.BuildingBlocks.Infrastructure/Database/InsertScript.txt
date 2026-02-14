@@ -128,3 +128,29 @@ SELECT SETVAL('tours."ShoppingCarts_Id_seq"', COALESCE(MAX("Id"), 1)) FROM tours
 SELECT SETVAL('tours."TourPurchases_Id_seq"', COALESCE(MAX("Id"), 1)) FROM tours."TourPurchases";
 SELECT SETVAL('tours."Tours_Id_seq"', COALESCE(MAX("Id"), 1)) FROM tours."Tours";
 SELECT SETVAL('tours."TourReviews_Id_seq"', COALESCE(MAX("Id"), 1)) FROM tours."TourReviews";
+
+-- ZA OCENJIVANJE TURE
+
+-- Add recently completed tours (within last 7 days) for testing reviews
+-- Current date reference: 2026-02-14
+INSERT INTO tours."Tours"("Id", "AuthorId", "Name", "Description", "Difficulty", "Category", "Price", "Date", "State") VALUES 
+(50, 10, 'Recent City Walk', 'Test tour - happened 3 days ago', 1, 2, 20, '2026-02-11 10:00:00+01:00', 1),
+(51, 11, 'Nature Trail Yesterday', 'Test tour - happened yesterday', 2, 1, 30, '2026-02-13 09:00:00+01:00', 1),
+(52, 12, 'Week Old Tour', 'Test tour - happened 6 days ago (last day to review)', 1, 5, 25, '2026-02-08 11:00:00+01:00', 1);
+
+-- Add key points
+INSERT INTO tours."KeyPoints"("Id", "TourId", "Name", "Description", "Latitude", "Longitude", "ImageUrl", "Order") VALUES 
+(50, 50, 'City Center', 'Starting point', 44.8166, 20.4595, null, 1),
+(51, 51, 'Trail Head', 'Nature path start', 44.8200, 20.4600, null, 1),
+(52, 52, 'Food Market', 'Local cuisine spot', 44.8150, 20.4580, null, 1);
+
+-- Add purchases for these tours
+INSERT INTO tours."TourPurchases"("Id", "TouristId", "TourIds", "TotalAmount", "BonusPointsUsed", "FinalAmount", "PurchaseDate", "Status", "ReminderSent") VALUES 
+(50, 20, '[50]', 20.00, 0.00, 20.00, '2026-02-05 10:00:00+01:00', 0, true),
+(51, 21, '[51]', 30.00, 0.00, 30.00, '2026-02-10 09:00:00+01:00', 0, true),
+(52, 22, '[52]', 25.00, 0.00, 25.00, '2026-02-01 14:00:00+01:00', 0, true);
+
+-- Sync sequences
+SELECT SETVAL('tours."Tours_Id_seq"', COALESCE(MAX("Id"), 1)) FROM tours."Tours";
+SELECT SETVAL('tours."KeyPoints_Id_seq"', COALESCE(MAX("Id"), 1)) FROM tours."KeyPoints";
+SELECT SETVAL('tours."TourPurchases_Id_seq"', COALESCE(MAX("Id"), 1)) FROM tours."TourPurchases";
