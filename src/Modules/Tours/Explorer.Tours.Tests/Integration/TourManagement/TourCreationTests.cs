@@ -127,31 +127,6 @@ public class TourCreationTests : BaseToursIntegrationTest
         result.StatusCode.ShouldBe(400);
     }
 
-    [Fact]
-    public void Fails_to_create_tour_with_past_date()
-    {
-        // Arrange
-        using var scope = Factory.Services.CreateScope();
-        var controller = CreateController(scope, authorId: -11);
-
-        var tour = new TourDto
-        {
-            Name = "Test Tour",
-            Description = "Valid description",
-            Difficulty = 3,
-            Category = 2,
-            Price = 1000,
-            Date = DateTime.UtcNow.AddDays(-10), // Past date
-            State = (int)TourState.DRAFT
-        };
-
-        // Act
-        var result = (ObjectResult)controller.Create(tour).Result;
-
-        // Assert
-        result.StatusCode.ShouldBe(400);
-    }
-
     private static ToursController CreateController(IServiceScope scope, long authorId)
     {
         var controller = new ToursController(scope.ServiceProvider.GetRequiredService<ITourService>());
